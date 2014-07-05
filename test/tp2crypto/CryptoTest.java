@@ -61,21 +61,21 @@ public class CryptoTest {
 
     @Test
     public void testHash() {
-        long expResult = 44L;
-        long result = instance.hash("0123456ABC");
+        String expResult = "44";
+        String result = instance.hash("0123456ABC");
         assertEquals(expResult, result);
     }
     
     @Test
     public void testHash2() {
-        long expResult = 774L;
-        long result = instance.hash("VERISIGN VERISIGN 2030 01 01 31 7979");
+        String expResult = "774";
+        String result = instance.hash("VERISIGN VERISIGN 2030 01 01 31 7979");
         assertEquals(expResult, result);
     }
     @Test
     public void testHash3() {
-        long expResult = 324L;
-        long result = instance.hash("www.desjardins.com VERISIGN 2025 01 01 23 3811");
+        String expResult = "324";
+        String result = instance.hash("www.desjardins.com VERISIGN 2025 01 01 23 3811");
         assertEquals(expResult, result);
     }
 }

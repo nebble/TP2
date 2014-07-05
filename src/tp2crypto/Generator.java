@@ -4,8 +4,8 @@ import java.util.Random;
 
 public class Generator {
     
-    public static int genRand(){
-        return genRand(0, Integer.MAX_VALUE - 1);
+    public static String genRand(){
+        return String.valueOf(genRand(0, Integer.MAX_VALUE - 1));
     }
     
     public static int genRand(int min, int max){

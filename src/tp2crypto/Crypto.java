@@ -19,7 +19,11 @@ public class Crypto {
         return rsa(mL0, e, n);
     }
     
-    public String rsa(String m, int e, int n) {
+    public static String rsa(String m, Key key) {
+        return rsa(m, key.getE(), key.getN());
+    }
+    
+    public static String rsa(String m, int e, int n) {
         
         BigInteger bigE = new BigInteger(Integer.toString(e));
         BigInteger bigN = new BigInteger(Integer.toString(n));
@@ -28,7 +32,7 @@ public class Crypto {
         return bigM.modPow(bigE, bigN).toString();
     }
     
-    public long hash(String m){
+    public String hash(String m){
         return FunctionH.hash(m);
     }
         

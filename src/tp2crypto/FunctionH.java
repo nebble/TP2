@@ -21,11 +21,11 @@ public class FunctionH {
         return n*n;
     }
     
-    public static long hash(String m){
+    public static String hash(String m){
         
         // On découpe en blocs de 5 chiffres
         String codeM = Language.codeL0(m);
         String[] blocks = codeM.split("(?<=\\G.{5})");
-        return h(codeM, blocks.length);
+        return String.valueOf(h(codeM, blocks.length));
     }
 }
