@@ -52,10 +52,12 @@ public class Server {
         
         String iv = generator.genRandomIV();
         String m = m1 + m2 + m3;
+        print(iv);
         print(m);
         String h = FunctionH.hash(m);
+        print(h);
         
-        return iv + (new SymetricKey(k, iv)).lsfr(h);
+        return iv + (new SymetricKey(k, iv)).crypt(h);
     }
 
     public void setM1(String m1) {
@@ -68,6 +70,14 @@ public class Server {
 
     public void setM3(String m3) {
         this.m3 = m3;
+    }
+
+    public void setNc(String nc) {
+        this.nc = nc;
+    }
+
+    public void setNs(String ns) {
+        this.ns = ns;
     }
     
     void inject(Generator fakeGenerator) {

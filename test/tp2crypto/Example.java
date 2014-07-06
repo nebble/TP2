@@ -46,6 +46,8 @@ public class Example {
         server.setM1("30161");
         server.setM2("12150 www.desjardins.com VERISIGN 2025 01 01 23 3811 6069");
         server.setM3("2302");
+        server.setNc("30161");
+        server.setNs("12150");
         server.inject(new FakeGenerator("b4INtb"));
         
         String expResult = "b4INtb7X6";
