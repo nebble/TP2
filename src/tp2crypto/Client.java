@@ -16,7 +16,7 @@ public class Client {
     private Key keyCA = new Key(31,7979);
 
     private String initNC0() {
-        this.nc = Generator.genRand();
+        this.nc = "30161";// Generator.genRand();
         status = "connected";
         return nc;
     }
@@ -36,6 +36,7 @@ public class Client {
                 return initNC0();
             case "connected":
                 return validateCert(message);
+            case "thrusted":
         }
         
         return "";
@@ -76,7 +77,9 @@ public class Client {
             throw new RuntimeException();
         }
         
-        this.k0 = Generator.genRand();
+        this.k0 = Generator.genRandomK();
+        
+        this.status = "thrusted";
         
         return Crypto.rsa(k0, serverKey);
     }

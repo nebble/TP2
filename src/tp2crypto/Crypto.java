@@ -10,7 +10,7 @@ import java.math.BigInteger;
 
 public class Crypto {
     
-    public int genRand(int min, int max){
+    public String genRand(int min, int max){
         return Generator.genRand(min, max);
     }
     

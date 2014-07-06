@@ -4,17 +4,21 @@ import java.util.Random;
 
 public class Generator {
     
-    public static String genRand(){
-        return String.valueOf(genRand(0, Integer.MAX_VALUE - 1));
+    public static String genRandomN(){
+        return genRand(0, 99999);
     }
     
-    public static int genRand(int min, int max){
+    public static String genRandomK(){
+        return genRand(2, 3810);
+    }
+    
+    public static String genRand(int min, int max){
         
         Random rand = new Random();
 
         // nextInt exlus la valeur limite maximum. On ajoute 1.
         int randomNum = rand.nextInt((max - min) + 1) + min;
 
-        return randomNum;
+        return String.valueOf(randomNum);
     }
 }
