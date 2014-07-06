@@ -1,7 +1,6 @@
 package tp2crypto;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class SymetricKey {
@@ -25,10 +24,8 @@ public class SymetricKey {
     
     public String crypt(String m) {
         String crypted = iv;
-        int i = 0;
         for (char c : m.toCharArray()) {
             crypted += crypt(c);
-            i++;
         }
         return crypted;
     }
