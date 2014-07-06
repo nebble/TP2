@@ -7,18 +7,18 @@ public class SymetricKey {
        
     private List<Integer> flux = new ArrayList<>();
     private final String iv;
-    private final String[] k;
+    private final int[] k;
     private int position;
     
-    public SymetricKey(String[] k, String iv) {
+    public SymetricKey(int[] k, String iv) {
         this.iv = iv;
         this.k = k;
     }
     
     private int initLSFR(int i) {
         String ivi = Language.codeL0(iv.charAt(i)); // CodeL0(IV [i])
-        String ki = k[i]; // K[i]
-        int inner = Integer.parseInt(ki) + Integer.parseInt(ivi) + 5; // K[i] + CodeL0(IV [i]) + 5
+        int ki = k[i]; // K[i]
+        int inner = ki + Integer.parseInt(ivi) + 5; // K[i] + CodeL0(IV [i]) + 5
         return (inner * inner) % 65; // LSFR K,IV [i]
     }
     
@@ -28,6 +28,21 @@ public class SymetricKey {
             crypted += crypt(c);
         }
         return crypted;
+    }
+    
+    public String decrypt(String crypted) {
+        String message = "";
+        for (char c : crypted.toCharArray()) {
+            message += decrypt(c);
+        }
+        return message;
+    }
+    
+    private char decrypt(char c) {
+        int lsfr = lsfr();
+        int codeL0 = Integer.parseInt(Language.codeL0(c)); // (CodeL0(M[i])
+        int result = (codeL0 + 65 - lsfr) % 65;
+        return Language.charL0(result);
     }
     
     private char crypt(char c) {
@@ -50,4 +65,15 @@ public class SymetricKey {
         }
         return ret;
     }
+    
+    public static int[] generateKey(String str) {
+        int k[] = new int[6];
+        k[0] = Integer.parseInt(FunctionH.hash("0" + str)) % 65;
+        k[1] = Integer.parseInt(FunctionH.hash("1" + str)) % 65;
+        k[2] = Integer.parseInt(FunctionH.hash("2" + str)) % 65;
+        k[3] = Integer.parseInt(FunctionH.hash("3" + str)) % 65;
+        k[4] = Integer.parseInt(FunctionH.hash("4" + str)) % 65;
+        k[5] = Integer.parseInt(FunctionH.hash("5" + str)) % 65;
+        return k;
+    }     
 }

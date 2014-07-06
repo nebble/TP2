@@ -13,9 +13,11 @@ public class Client {
     private String k0;
     
     private Key serverKey;
-    private Key keyCA = new Key(31,7979);
+    private final Key keyCA = new Key(31,7979);
     
     Generator generator = new Generator();
+    private String m2 = "12150 www.desjardins.com VERISIGN 2025 01 01 23 3811 6069";
+    private String m3 = "2302";
 
     private String initNC0() {
         this.nc = generator.genRandomN();
@@ -23,14 +25,22 @@ public class Client {
         return nc;
     }
 
-
     public String getNC() {
         return this.nc;
     }
     
-    public void setNC(String nc) {
+    public void setNc(String nc) {
         this.nc = nc;
     }
+
+    public void setNs(String ns) {
+        this.ns = ns;
+    }
+    
+    public void setK0(String k0) {
+        this.k0 = k0;
+    }
+    
 
     public String receive(String message) {
         switch (status) {
@@ -39,6 +49,7 @@ public class Client {
             case "connected":
                 return validateCert(message);
             case "thrusted":
+                return process(message);
         }
         
         return "";
@@ -89,12 +100,28 @@ public class Client {
     void setStatus(String status) {
         this.status = status;
     }
-    
-    void print(String s) {
-        System.out.println(s);
-    }
 
     void inject(Generator fakeGenerator) {
         this.generator = fakeGenerator;
+    }
+
+    private String process(String message) {
+        String iv = message.substring(0, 6);
+        int[] k = SymetricKey.generateKey(nc + k0 + ns);
+        SymetricKey s = new SymetricKey(k, iv);
+        String value = s.decrypt(message.substring(6));
+        
+        String m = nc + m2 + m3; // m1 + m2 + m3
+        String h = FunctionH.hash(m);
+        
+        if (!value.equals(h)) {
+            throw new RuntimeException();
+        }
+        
+        return "TO FINISH";
+    }
+        
+    void print(String s) {
+        System.out.println(s);
     }
 }

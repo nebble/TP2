@@ -17,7 +17,7 @@ public class SymetricKeyTest {
 
     @Test
     public void testLsfr() {
-        String[] key = {"1", "2", "3", "4", "5", "6"};
+        int[] key = {1,2,3,4,5,6};
         
         SymetricKey k = new SymetricKey(key, "b4INtb");
 
