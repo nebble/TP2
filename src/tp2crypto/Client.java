@@ -14,9 +14,11 @@ public class Client {
     
     private Key serverKey;
     private Key keyCA = new Key(31,7979);
+    
+    Generator generator = new Generator();
 
     private String initNC0() {
-        this.nc = "30161";// Generator.genRand();
+        this.nc = generator.genRandomN();
         status = "connected";
         return nc;
     }
@@ -77,7 +79,7 @@ public class Client {
             throw new RuntimeException();
         }
         
-        this.k0 = Generator.genRandomK();
+        this.k0 = generator.genRandomK();
         
         this.status = "thrusted";
         
@@ -90,5 +92,9 @@ public class Client {
     
     void print(String s) {
         System.out.println(s);
+    }
+
+    void inject(Generator fakeGenerator) {
+        this.generator = fakeGenerator;
     }
 }

@@ -8,11 +8,11 @@ public class Language {
             + " $.";
     
     
-    private static String codeL0(int c){
+    public static String codeL0(int c){
         return Integer.toString(alphabet.indexOf(c));
     }
 
-    private static char charL0(int index){
+    public static char charL0(int index){
         return alphabet.charAt(index);
     }
 
