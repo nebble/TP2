@@ -16,8 +16,8 @@ public class Client {
     private final Key keyCA = new Key(31,7979);
     
     Generator generator = new Generator();
-    private String m2 = "12150 www.desjardins.com VERISIGN 2025 01 01 23 3811 6069";
-    private String m3 = "2302";
+    private String m2;
+    private String m3;
 
     private String initNC0() {
         this.nc = generator.genRandomN();
@@ -40,7 +40,14 @@ public class Client {
     public void setK0(String k0) {
         this.k0 = k0;
     }
-    
+
+    public void setM2(String m2) {
+        this.m2 = m2;
+    }
+
+    public void setM3(String m3) {
+        this.m3 = m3;
+    }
 
     public String receive(String message) {
         switch (status) {
@@ -48,14 +55,17 @@ public class Client {
                 return initNC0();
             case "connected":
                 return validateCert(message);
-            case "thrusted":
+            case "negotiating":
                 return process(message);
+            case "thrusted":
+                return command(message);
         }
         
         return "";
     }
 
     private String validateCert(String message) {
+        this.m2 = message;
         String[] split = message.split(" ");
         this.ns = split[0];
         String website = split[1];
@@ -92,9 +102,11 @@ public class Client {
         
         this.k0 = generator.genRandomK();
         
-        this.status = "thrusted";
+        this.status = "negotiating";
         
-        return Crypto.rsa(k0, serverKey);
+        String rsa = Crypto.rsa(k0, serverKey);
+        this.m3 = rsa;
+        return rsa;
     }
 
     void setStatus(String status) {
@@ -108,20 +120,27 @@ public class Client {
     private String process(String message) {
         String iv = message.substring(0, 6);
         int[] k = SymetricKey.generateKey(nc + k0 + ns);
-        SymetricKey s = new SymetricKey(k, iv);
-        String value = s.decrypt(message.substring(6));
+        String value = (new SymetricKey(k, iv)).decrypt(message.substring(6));
         
-        String m = nc + m2 + m3; // m1 + m2 + m3
+        String m = nc + m2 + m3;
         String h = FunctionH.hash(m);
         
         if (!value.equals(h)) {
             throw new RuntimeException();
         }
         
-        return "TO FINISH";
+        m += message;
+        h = FunctionH.hash(m);
+        
+        this.status = "thrusted";
+        return (new SymetricKey(k, generator.genRandomIV())).crypt(h);
     }
         
     void print(String s) {
         System.out.println(s);
+    }
+
+    private String command(String message) {
+        return "";
     }
 }

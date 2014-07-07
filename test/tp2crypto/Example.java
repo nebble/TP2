@@ -54,13 +54,32 @@ public class Example {
     
     @Test
     public void Step4() {
-        client.setStatus("thrusted");
+        
+        client.setStatus("negotiating");
         client.setNc("30161");
         client.setNs("12150");
         client.setK0("1716");
+        client.setM2("12150 www.desjardins.com VERISIGN 2025 01 01 23 3811 6069");
+        client.setM3("2302");
+        client.inject(new FakeGenerator("x3I9AA"));
         
         String expResult = "x3I9AAqH4";
         String result = client.receive("b4INtb7X6");
+        assertEquals(expResult, result);
+    }
+    
+    @Test
+    public void Step5() {
+        server.setStatus("thrusted");
+        server.setNc("30161");
+        server.setNs("12150");
+        server.setM3("2302");
+        server.setM4("b4INtb7X6");
+        server.setK0("1716");
+        server.inject(new FakeGenerator("171", "171", "bglDHJ"));
+        
+        String expResult = "bglDHJEorWISWxY3vjfWD$uiYt0UL jrwN6ZhI0";
+        String result = server.receive("x3I9AAqH4");
         assertEquals(expResult, result);
     }
 }

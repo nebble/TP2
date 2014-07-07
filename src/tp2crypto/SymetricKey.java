@@ -23,6 +23,9 @@ public class SymetricKey {
     }
     
     public String crypt(String m) {
+        this.position = 0;
+        this.flux = new ArrayList<>();
+        
         String crypted = iv;
         for (char c : m.toCharArray()) {
             crypted += crypt(c);
@@ -31,6 +34,9 @@ public class SymetricKey {
     }
     
     public String decrypt(String crypted) {
+        this.position = 0;
+        this.flux = new ArrayList<>();
+        
         String message = "";
         for (char c : crypted.toCharArray()) {
             message += decrypt(c);
@@ -59,7 +65,7 @@ public class SymetricKey {
             flux.add(ret);
             position ++;
         } else {
-            ret = flux.get(0) + flux.get(2) + flux.get(4);
+            ret = (flux.get(0) + flux.get(2) + flux.get(4)) % 65;
             flux.remove(0);
             flux.add(ret);
         }

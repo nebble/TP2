@@ -1,24 +1,32 @@
 package tp2crypto;
 
 public class FakeGenerator extends Generator{
-    private final String ret;
+    private final String k;
+    private final String n;
+    private final String iv;
 
     public FakeGenerator(String ret) {
-        this.ret = ret;
+        this(ret, ret, ret);
+    }
+    
+    public FakeGenerator(String k, String n, String iv) {
+        this.k = k;
+        this.n = n;
+        this.iv = iv;
     }
 
     @Override
     public String genRandomK() {
-        return ret;
+        return k;
     }
 
     @Override
     public String genRandomN() {
-        return ret;
+        return n;
     }
 
     @Override
     public String genRandomIV() {
-        return ret;
+        return iv;
     }
 }
