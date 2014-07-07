@@ -7,8 +7,12 @@ public class Server {
     private String nc;
     private String ns;
     private String ns1;
+    private String ns2;
     private String m3;
     private String m4;
+    
+    private String numCompte = "80123";
+    private String password = "BN12Z";
     
     Generator generator = new Generator();
     private String k0;
@@ -19,8 +23,10 @@ public class Server {
                 return init(value);
             case "connected":
                 return accept(value);
-            case "thrusted": 
+            case "trusted": 
                 return process(value);
+            case "authenticating":
+                return verify(value);
         }
         
         return "";
@@ -45,7 +51,7 @@ public class Server {
         String m = nc + (ns + " " + cert) + value; // m1 + m2 + m3
         String h = FunctionH.hash(m);
         
-        status = "thrusted";
+        status = "trusted";
         String crypted = (new SymetricKey(k, iv)).crypt(h);
         this.m3 = value;
         this.m4 = crypted;
@@ -99,5 +105,37 @@ public class Server {
 
     public void setK0(String k0) {
         this.k0 = k0;
+    }
+    
+    public void setNS2(String ns2){
+        this.ns2 = ns2;
+    }
+    
+    public void setNS1(String ns1) {
+        this.ns1 = ns1;
+    }
+    
+    public String verify(String message){
+        String iv = message.substring(0, 6);
+        int[] k = SymetricKey.generateKey(nc + k0 + ns);
+        String value = (new SymetricKey(k, iv)).decrypt(message.substring(6));
+        
+        String[] split = value.split(" ");
+        
+        if(!split[0].equals(this.numCompte)) {
+            return "ERROR COMPTE";
+        }
+        
+        if(!split[1].equals(this.password)){
+            return "ERROR PASS";
+        }
+        
+        if(!split[2].equals(this.ns1)) {
+            return "ERROR NS1";
+        }
+        
+        String ret = "CHOISIR OPERATION TRANSFERT QUITTER " + ns2;
+        
+        return (new SymetricKey(k, generator.genRandomIV())).crypt(ret);
     }
 }

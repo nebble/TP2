@@ -18,6 +18,9 @@ public class Client {
     Generator generator = new Generator();
     private String m2;
     private String m3;
+    
+    private String numCpt;
+    private String passwd;
 
     private String initNC0() {
         this.nc = generator.genRandomN();
@@ -48,6 +51,14 @@ public class Client {
     public void setM3(String m3) {
         this.m3 = m3;
     }
+    
+    public void setNumCompte(String num){
+        this.numCpt = num;
+    }
+    
+    public void setPassword(String password){
+        this.passwd = password;
+    }
 
     public String receive(String message) {
         switch (status) {
@@ -57,8 +68,10 @@ public class Client {
                 return validateCert(message);
             case "negotiating":
                 return process(message);
-            case "thrusted":
+            case "trusted":
                 return command(message);
+            case "authenticating":
+                return sendCredentials(message);
         }
         
         return "";
@@ -132,7 +145,7 @@ public class Client {
         m += message;
         h = FunctionH.hash(m);
         
-        this.status = "thrusted";
+        this.status = "trusted";
         return (new SymetricKey(k, generator.genRandomIV())).crypt(h);
     }
         
@@ -142,5 +155,17 @@ public class Client {
 
     private String command(String message) {
         return "";
+    }
+    
+    public String sendCredentials(String message){
+        String iv = message.substring(0, 6);
+        int[] k = SymetricKey.generateKey(nc + k0 + ns);
+        String value = (new SymetricKey(k, iv)).decrypt(message.substring(6));
+        
+        String[] split = value.split(" ");
+        int ns1 = Integer.parseInt(split[split.length-1]);
+        
+        String m = this.numCpt + " " + this.passwd + " " + ns1;
+        return (new SymetricKey(k, generator.genRandomIV())).crypt(m);
     }
 }

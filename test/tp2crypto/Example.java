@@ -70,16 +70,46 @@ public class Example {
     
     @Test
     public void Step5() {
-        server.setStatus("thrusted");
+        server.setStatus("trusted");
         server.setNc("30161");
         server.setNs("12150");
         server.setM3("2302");
         server.setM4("b4INtb7X6");
         server.setK0("1716");
-        server.inject(new FakeGenerator("171", "171", "bglDHJ"));
+        server.inject(new FakeGenerator("171", "171", "bqlDHJ"));
         
-        String expResult = "bglDHJEorWISWxY3vjfWD$uiYt0UL jrwN6ZhI0";
+        String expResult = "bqlDHJEorWISWxY3vjfWD$uiYt0UL jrwN6ZhI0";
         String result = server.receive("x3I9AAqH4");
+        assertEquals(expResult, result);
+    }
+    
+    @Test
+    public void Step6() {
+        client.setStatus("authenticating");
+        client.setNumCompte("80123");
+        client.setPassword("BN12Z");
+        client.setNc("30161");
+        client.setNs("12150");
+        client.setK0("1716");
+        client.inject(new FakeGenerator("ovI4.H"));
+        
+        String expResult = "ovI4.HMp23D$aBbvff3Tj";
+        String result = client.receive("bglDHJEKrWISWTYcvofgDmuiYo0ALbj3ww6yhS0");
+        assertEquals(expResult, result);
+    }
+    
+    @Test
+    public void Step7() {
+        server.setStatus("authenticating");
+        server.setNc("30161");
+        server.setNs("12150");
+        server.setK0("1716");
+        server.setNS1("171");
+        server.setNS2("20731");
+        server.inject(new FakeGenerator("PcO$65"));
+        
+        String expResult = "PcO$65pVNH2vdn9ooDhR7XGtiR7PXAVOmu2GU6aaMlGnNxQ";
+        String result = server.receive("ovI4.HMp23D$aBbvff3Tj");
         assertEquals(expResult, result);
     }
 }
