@@ -33,6 +33,11 @@ public class Server {
         
         return "";
     }
+    
+    private SymetricKey getSymKey() {
+        int[] k = SymetricKey.generateKey(nc + k0 + ns);
+        return new SymetricKey(k);
+    }
 
     private String init(String value) {
         status = "connected";
@@ -47,14 +52,12 @@ public class Server {
 
     private String accept(String value) {
         this.k0 = Crypto.rsa(value, PRIVATE_KEY);
-        int[] k = SymetricKey.generateKey(nc + k0 + ns);
-        
-        String iv = generator.genRandomIV();
+
         String m = nc + (ns + " " + cert) + value; // m1 + m2 + m3
         String h = FunctionH.hash(m);
         
         status = "trusted";
-        String crypted = (new SymetricKey(k, iv)).crypt(h);
+        String crypted = getSymKey().crypt(generator.genRandomIV(), h);
         this.m3 = value;
         this.m4 = crypted;
         return crypted;
@@ -73,9 +76,8 @@ public class Server {
     }
 
     private String process(String message) {
-        String iv = message.substring(0, 6);
-        int[] k = SymetricKey.generateKey(nc + k0 + ns);
-        String value = (new SymetricKey(k, iv)).decrypt(message.substring(6));
+        SymetricKey symKey = getSymKey();
+        String value = symKey.decrypt(message);
         
         String m = nc + (ns + " " + cert) + m3 + m4;
         String h = FunctionH.hash(m);
@@ -88,7 +90,7 @@ public class Server {
         String ret = "DONNER NUMERO ET MOT DE PASSE " + ns1;
         
         this.status = "authenticating";
-        return (new SymetricKey(k, generator.genRandomIV())).crypt(ret);
+        return symKey.crypt(generator.genRandomIV(), ret);
     }
     
     void setM3(String m3) {
@@ -112,9 +114,8 @@ public class Server {
     }
     
     public String verify(String message){
-        String iv = message.substring(0, 6);
-        int[] k = SymetricKey.generateKey(nc + k0 + ns);
-        String value = (new SymetricKey(k, iv)).decrypt(message.substring(6));
+        SymetricKey symKey = getSymKey();
+        String value = symKey.decrypt(message);
         
         String[] split = value.split(" ");
         
@@ -134,13 +135,12 @@ public class Server {
         String ret = "CHOISIR OPERATION TRANSFERT QUITTER " + ns2;
         
         this.status = "clientlogged";
-        return (new SymetricKey(k, generator.genRandomIV())).crypt(ret);
+        return symKey.crypt(generator.genRandomIV(), ret);
     }
     
     public String operation(String message) {
-        String iv = message.substring(0, 6);
-        int[] k = SymetricKey.generateKey(nc + k0 + ns);
-        String value = (new SymetricKey(k, iv)).decrypt(message.substring(6));
+        SymetricKey symKey = getSymKey();
+        String value = symKey.decrypt(message);
         
         String[] values = value.split(" ");
         
@@ -160,6 +160,6 @@ public class Server {
         
         String response = "REPONSE " + ns2 + " " + nc1;
         
-        return (new SymetricKey(k, generator.genRandomIV())).crypt(response);
+        return symKey.crypt(generator.genRandomIV(), response);
     }
 }

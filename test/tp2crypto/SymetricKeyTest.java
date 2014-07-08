@@ -19,10 +19,10 @@ public class SymetricKeyTest {
     public void testLsfr() {
         int[] key = {1,2,3,4,5,6};
         
-        SymetricKey k = new SymetricKey(key, "b4INtb");
+        SymetricKey k = new SymetricKey(key);
 
         String expResult = "b4INtbdrZlFm8PV";
-        String result = k.crypt("A 9$FJILF");
+        String result = k.crypt("b4INtb", "A 9$FJILF");
         assertEquals(expResult, result);
     }    
 }

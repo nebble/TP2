@@ -23,6 +23,28 @@ public class Client {
     private String numCpt;
     private String passwd;
 
+    public String receive(String message) {
+        switch (status) {
+            case "closed":
+                return initNC0();
+            case "connected":
+                return validateCert(message);
+            case "negotiating":
+                return process(message);
+            case "authenticating":
+                return sendCredentials(message);
+            case "logged":
+                return operation(message);
+        }
+        
+        return "";
+    }
+    
+    private SymetricKey getSymKey() {
+        int[] k = SymetricKey.generateKey(nc + k0 + ns);
+        return new SymetricKey(k);
+    }
+    
     private String initNC0() {
         this.nc = generator.genRandomN();
         status = "connected";
@@ -59,23 +81,6 @@ public class Client {
     
     public void setPassword(String password){
         this.passwd = password;
-    }
-
-    public String receive(String message) {
-        switch (status) {
-            case "closed":
-                return initNC0();
-            case "connected":
-                return validateCert(message);
-            case "negotiating":
-                return process(message);
-            case "authenticating":
-                return sendCredentials(message);
-            case "logged":
-                return operation(message);
-        }
-        
-        return "";
     }
 
     private String validateCert(String message) {
@@ -132,9 +137,8 @@ public class Client {
     }
 
     private String process(String message) {
-        String iv = message.substring(0, 6);
-        int[] k = SymetricKey.generateKey(nc + k0 + ns);
-        String value = (new SymetricKey(k, iv)).decrypt(message.substring(6));
+        SymetricKey symKey = getSymKey();
+        String value = symKey.decrypt(message);
         
         String m = nc + m2 + m3;
         String h = FunctionH.hash(m);
@@ -147,25 +151,23 @@ public class Client {
         h = FunctionH.hash(m);
         
         this.status = "authenticating";
-        return (new SymetricKey(k, generator.genRandomIV())).crypt(h);
+        return symKey.crypt(generator.genRandomIV(), h);
     }    
     public String sendCredentials(String message){
-        String iv = message.substring(0, 6);
-        int[] k = SymetricKey.generateKey(nc + k0 + ns);
-        String value = (new SymetricKey(k, iv)).decrypt(message.substring(6));
+        SymetricKey symKey = getSymKey();
+        String value = symKey.decrypt(message);
         
         String[] split = value.split(" ");
         int ns1 = Integer.parseInt(split[split.length-1]);
         
         String m = this.numCpt + " " + this.passwd + " " + ns1;
         this.status = "logged";
-        return (new SymetricKey(k, generator.genRandomIV())).crypt(m);
+        return symKey.crypt(generator.genRandomIV(), m);
     }
     
     private String operation(String message) {
-        String iv = message.substring(0, 6);
-        int[] k = SymetricKey.generateKey(nc + k0 + ns);
-        String value = (new SymetricKey(k, iv)).decrypt(message.substring(6));
+        SymetricKey symKey = getSymKey();
+        String value = symKey.decrypt(message);
         String[] values = value.split(" ");
         
         this.nc1 = generator.genRandomN();
@@ -181,6 +183,6 @@ public class Client {
             throw new RuntimeException();
         }
         
-        return (new SymetricKey(k, generator.genRandomIV())).crypt(response);
+        return symKey.crypt(generator.genRandomIV(), response);
     }
 }

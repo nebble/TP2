@@ -6,12 +6,11 @@ import java.util.List;
 public class SymetricKey {
        
     private List<Integer> flux = new ArrayList<>();
-    private final String iv;
+    private String iv;
     private final int[] k;
     private int position;
     
-    public SymetricKey(int[] k, String iv) {
-        this.iv = iv;
+    public SymetricKey(int[] k) {
         this.k = k;
     }
     
@@ -22,9 +21,10 @@ public class SymetricKey {
         return (inner * inner) % 65; // LSFR K,IV [i]
     }
     
-    public String crypt(String m) {
+    public String crypt(String iv, String m) {
         this.position = 0;
         this.flux = new ArrayList<>();
+        this.iv = iv;
         
         String crypted = iv;
         for (char c : m.toCharArray()) {
@@ -36,6 +36,8 @@ public class SymetricKey {
     public String decrypt(String crypted) {
         this.position = 0;
         this.flux = new ArrayList<>();
+        this.iv = crypted.substring(0, 6);
+        crypted = crypted.substring(6);
         
         String message = "";
         for (char c : crypted.toCharArray()) {
@@ -59,7 +61,7 @@ public class SymetricKey {
     }
     
     private int lsfr() {
-        int ret = 0;
+        int ret;
         if (position < 6) {
             ret = initLSFR(position);
             flux.add(ret);
