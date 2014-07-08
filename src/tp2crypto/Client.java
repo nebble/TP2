@@ -9,6 +9,7 @@ public class Client {
     private String status = "closed";
     
     private String nc;
+    private String nc1;
     private String ns;
     private String k0;
     
@@ -68,10 +69,10 @@ public class Client {
                 return validateCert(message);
             case "negotiating":
                 return process(message);
-            case "trusted":
-                return command(message);
             case "authenticating":
                 return sendCredentials(message);
+            case "logged":
+                return operation(message);
         }
         
         return "";
@@ -145,18 +146,9 @@ public class Client {
         m += message;
         h = FunctionH.hash(m);
         
-        this.status = "trusted";
+        this.status = "authenticating";
         return (new SymetricKey(k, generator.genRandomIV())).crypt(h);
-    }
-        
-    void print(String s) {
-        System.out.println(s);
-    }
-
-    private String command(String message) {
-        return "";
-    }
-    
+    }    
     public String sendCredentials(String message){
         String iv = message.substring(0, 6);
         int[] k = SymetricKey.generateKey(nc + k0 + ns);
@@ -166,6 +158,29 @@ public class Client {
         int ns1 = Integer.parseInt(split[split.length-1]);
         
         String m = this.numCpt + " " + this.passwd + " " + ns1;
+        this.status = "logged";
         return (new SymetricKey(k, generator.genRandomIV())).crypt(m);
+    }
+    
+    private String operation(String message) {
+        String iv = message.substring(0, 6);
+        int[] k = SymetricKey.generateKey(nc + k0 + ns);
+        String value = (new SymetricKey(k, iv)).decrypt(message.substring(6));
+        String[] values = value.split(" ");
+        
+        this.nc1 = generator.genRandomN();
+        String response;
+        
+        if ("CHOISIR".equals(values[0]) && "OPERATION".equals(values[1])) {
+            String ns2 = values[4];
+            response = "TRANSFERT 3124 050$ " + ns2 + " " + nc1;
+        } else if ("REPONSE".equals(values[0])) {
+            String ns2 = values[1];
+            response = "QUITTER " + ns2 + " " + nc1;
+        } else {
+            throw new RuntimeException();
+        }
+        
+        return (new SymetricKey(k, generator.genRandomIV())).crypt(response);
     }
 }

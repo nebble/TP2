@@ -27,6 +27,8 @@ public class Server {
                 return process(value);
             case "authenticating":
                 return verify(value);
+            case "clientlogged":
+                return operation(value);
         }
         
         return "";
@@ -85,14 +87,8 @@ public class Server {
         this.ns1 = generator.genRandomN();
         String ret = "DONNER NUMERO ET MOT DE PASSE " + ns1;
         
-        // DEBUG
-        print(ret);print(generator.genRandomIV());print(nc + k0 + ns);
-        
+        this.status = "authenticating";
         return (new SymetricKey(k, generator.genRandomIV())).crypt(ret);
-    }
-    
-    void print(String s) {
-        System.out.println(s);
     }
     
     void setM3(String m3) {
@@ -134,8 +130,36 @@ public class Server {
             return "ERROR NS1";
         }
         
+        this.ns2 = generator.genRandomN();
         String ret = "CHOISIR OPERATION TRANSFERT QUITTER " + ns2;
         
+        this.status = "clientlogged";
         return (new SymetricKey(k, generator.genRandomIV())).crypt(ret);
+    }
+    
+    public String operation(String message) {
+        String iv = message.substring(0, 6);
+        int[] k = SymetricKey.generateKey(nc + k0 + ns);
+        String value = (new SymetricKey(k, iv)).decrypt(message.substring(6));
+        
+        String[] values = value.split(" ");
+        
+        if (!this.ns2.equals(values[3])) {
+            throw new RuntimeException();
+        }
+
+        String nc1 = values[4];
+        
+        if ("TRANSFERT".equals(values[0])) {
+            System.out.println(values[2] + " has been draw from " + values[1]);
+        } else if ("QUITTER".equals(values[0])) {
+            this.status = "waiting";
+        }
+        
+        this.ns2 = generator.genRandomN();
+        
+        String response = "REPONSE " + ns2 + " " + nc1;
+        
+        return (new SymetricKey(k, generator.genRandomIV())).crypt(response);
     }
 }
