@@ -1,6 +1,6 @@
 package tp2crypto;
 
-class Key {
+public class Key {
     private final int e;
     private final int n;
 
