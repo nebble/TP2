@@ -12,9 +12,6 @@ public class Server {
     private String m3;
     private String m4;
     
-    private String numCompte = "80123";
-    private String password = "BN12Z";
-    
     Generator generator = new Generator();
     
     void setStatus(String status) {
@@ -103,7 +100,7 @@ public class Server {
         String h = FunctionH.hash(m);
         
         if (!value.equals(h)) {
-            throw new RuntimeException();
+            return error("client response doesn't return m1.m2.m3.m4");
         }
         
         this.ns1 = generator.genRandomN();
@@ -119,16 +116,12 @@ public class Server {
         
         String[] split = value.split(" ");
         
-        if(!split[0].equals(this.numCompte)) {
-            return "ERROR COMPTE";
-        }
-        
-        if(!split[1].equals(this.password)){
-            return "ERROR PASS";
+        if (!Database.validateCredential(split[0], split[1])) {
+            return error("credential are invalid");
         }
         
         if(!split[2].equals(this.ns1)) {
-            return "ERROR NS1";
+            return error("value of ns1 has changed");
         }
         
         this.ns2 = generator.genRandomN();
@@ -145,21 +138,27 @@ public class Server {
         String[] values = value.split(" ");
         
         if (!this.ns2.equals(values[3])) {
-            throw new RuntimeException();
+            return error("value of ns2 has changed");
         }
 
         String nc1 = values[4];
+        boolean success = false;
         
-        if ("TRANSFERT".equals(values[0])) {
-            System.out.println(values[2] + " has been draw from " + values[1]);
-        } else if ("QUITTER".equals(values[0])) {
-            this.status = "waiting";
+        switch (values[0]) {
+            case "TRANSFERT":
+                success = Database.doTransfert(values[1], values[2]);
+                break;
+            case "QUITTER":
+                this.status = "waiting";
+                success = true;
+                break;
         }
         
-        this.ns2 = generator.genRandomN();
-        
-        String response = "REPONSE " + ns2 + " " + nc1;
-        
+        String response = "REPONSE " + (success ? "1" : "0") + " " + nc1;
         return symKey.crypt(generator.genRandomIV(), response);
+    }
+    
+    private String error(String reason) {
+        return "ERROR: " + reason;
     }
 }

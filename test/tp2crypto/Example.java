@@ -121,7 +121,7 @@ public class Example {
         initKs();
         server.setNS1("171");
         server.setNS2("20731");
-        server.inject(new FakeGenerator("1", "1", "sTEkbQ"));
+        server.inject(new FakeGenerator("sTEkbQ"));
         
         String expResult = "sTEkbQNNOeMR8Lwap$g";
         String result = server.receive("lu7btIjHoMOF1Gqo9hINgn7jzjlCqhOWnNv");

@@ -105,18 +105,18 @@ public class Client {
         String crypt = split[8];
         
         if (!"www.desjardins.com".equals(website)) {
-            throw new RuntimeException();
+            return error("cert has an invalid website");
         }
         if (!"VERISIGN".equals(auth)) {
-            throw new RuntimeException();
+            return error("cert is not signed by a thrusted autority");
         }
         try {
             Date date = new SimpleDateFormat("yyyymmdd").parse(year + month + day);
             if (date.before(Calendar.getInstance().getTime())) {
-                throw new RuntimeException();
+                return error("cert date is expired");
             }
         } catch (ParseException ex) {
-            throw new RuntimeException();
+            return error("cert date format is not valid");
         }
         
         this.serverKey = new Key(Integer.parseInt(e),Integer.parseInt(n));
@@ -124,7 +124,7 @@ public class Client {
         String result = Crypto.rsa(crypt, keyCA);
         String hash = FunctionH.hash(website + " " + auth + " " + year + " " + month + " " + day + " " + e + " " + n);
         if (!result.equals(hash)) {
-            throw new RuntimeException();
+            return error("cert signature is incorrect");
         }
         
         this.k0 = generator.genRandomK();
@@ -144,7 +144,7 @@ public class Client {
         String h = FunctionH.hash(m);
         
         if (!value.equals(h)) {
-            throw new RuntimeException();
+            return error("server response doesn't return m1.m2.m3");
         }
         
         m += message;
@@ -181,9 +181,13 @@ public class Client {
             String ns2 = values[1];
             response = "QUITTER " + ns2 + " " + nc1;
         } else {
-            throw new RuntimeException();
+            return error("unknown operation");
         }
         
         return symKey.crypt(generator.genRandomIV(), response);
+    }
+    
+    private String error(String reason) {
+        return "ERROR: " + reason;
     }
 }
