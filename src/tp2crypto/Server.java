@@ -6,6 +6,7 @@ public class Server {
     private static final String cert = "www.desjardins.com VERISIGN 2025 01 01 23 3811 6069";
     private String nc;
     private String ns;
+    private String k0;
     private String ns1;
     private String ns2;
     private String m3;
@@ -15,7 +16,42 @@ public class Server {
     private String password = "BN12Z";
     
     Generator generator = new Generator();
-    private String k0;
+    
+    void setStatus(String status) {
+        this.status = status;
+    }
+    
+    public void setNc(String nc) {
+        this.nc = nc;
+    }
+
+    public void setNs(String ns) {
+        this.ns = ns;
+    }
+    
+    void inject(Generator fakeGenerator) {
+        this.generator = fakeGenerator;
+    }
+    
+    void setM3(String m3) {
+        this.m3 = m3;
+    }
+
+    void setM4(String m4) {
+        this.m4 = m4;
+    }
+
+    public void setK0(String k0) {
+        this.k0 = k0;
+    }
+    
+    public void setNS2(String ns2){
+        this.ns2 = ns2;
+    }
+    
+    public void setNS1(String ns1) {
+        this.ns1 = ns1;
+    }
 
     public String receive(String value) {
         switch (status) {
@@ -46,10 +82,6 @@ public class Server {
         return ns + " " + cert;
     }
 
-    void setStatus(String status) {
-        this.status = status;
-    }
-
     private String accept(String value) {
         this.k0 = Crypto.rsa(value, PRIVATE_KEY);
 
@@ -61,18 +93,6 @@ public class Server {
         this.m3 = value;
         this.m4 = crypted;
         return crypted;
-    }
-
-    public void setNc(String nc) {
-        this.nc = nc;
-    }
-
-    public void setNs(String ns) {
-        this.ns = ns;
-    }
-    
-    void inject(Generator fakeGenerator) {
-        this.generator = fakeGenerator;
     }
 
     private String process(String message) {
@@ -92,27 +112,7 @@ public class Server {
         this.status = "authenticating";
         return symKey.crypt(generator.genRandomIV(), ret);
     }
-    
-    void setM3(String m3) {
-        this.m3 = m3;
-    }
 
-    void setM4(String m4) {
-        this.m4 = m4;
-    }
-
-    public void setK0(String k0) {
-        this.k0 = k0;
-    }
-    
-    public void setNS2(String ns2){
-        this.ns2 = ns2;
-    }
-    
-    public void setNS1(String ns1) {
-        this.ns1 = ns1;
-    }
-    
     public String verify(String message){
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);

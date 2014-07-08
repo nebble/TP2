@@ -22,35 +22,7 @@ public class Client {
     
     private String numCpt;
     private String passwd;
-
-    public String receive(String message) {
-        switch (status) {
-            case "closed":
-                return initNC0();
-            case "connected":
-                return validateCert(message);
-            case "negotiating":
-                return process(message);
-            case "authenticating":
-                return sendCredentials(message);
-            case "logged":
-                return operation(message);
-        }
-        
-        return "";
-    }
     
-    private SymetricKey getSymKey() {
-        int[] k = SymetricKey.generateKey(nc + k0 + ns);
-        return new SymetricKey(k);
-    }
-    
-    private String initNC0() {
-        this.nc = generator.genRandomN();
-        status = "connected";
-        return nc;
-    }
-
     public String getNC() {
         return this.nc;
     }
@@ -82,7 +54,43 @@ public class Client {
     public void setPassword(String password){
         this.passwd = password;
     }
+    
+    void setStatus(String status) {
+        this.status = status;
+    }
 
+    void inject(Generator fakeGenerator) {
+        this.generator = fakeGenerator;
+    }
+
+    public String receive(String message) {
+        switch (status) {
+            case "closed":
+                return initNC0();
+            case "connected":
+                return validateCert(message);
+            case "negotiating":
+                return process(message);
+            case "authenticating":
+                return sendCredentials(message);
+            case "logged":
+                return operation(message);
+        }
+        
+        return "";
+    }
+    
+    private SymetricKey getSymKey() {
+        int[] k = SymetricKey.generateKey(nc + k0 + ns);
+        return new SymetricKey(k);
+    }
+    
+    private String initNC0() {
+        this.nc = generator.genRandomN();
+        status = "connected";
+        return nc;
+    }
+    
     private String validateCert(String message) {
         this.m2 = message;
         String[] split = message.split(" ");
@@ -128,14 +136,6 @@ public class Client {
         return rsa;
     }
 
-    void setStatus(String status) {
-        this.status = status;
-    }
-
-    void inject(Generator fakeGenerator) {
-        this.generator = fakeGenerator;
-    }
-
     private String process(String message) {
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
@@ -152,7 +152,8 @@ public class Client {
         
         this.status = "authenticating";
         return symKey.crypt(generator.genRandomIV(), h);
-    }    
+    }   
+    
     public String sendCredentials(String message){
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
