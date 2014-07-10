@@ -15,6 +15,7 @@ public class Server {
     private String m3;
     private String m4;
     private String operation;
+    private String username;
     private String destination;
     private int montant;
     
@@ -58,6 +59,10 @@ public class Server {
     
     public void setNS1(String ns1) {
         this.ns1 = ns1;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public boolean reveive(String value) {
@@ -107,8 +112,8 @@ public class Server {
     
     private boolean validateNc(String message) {
         try {
-            int nc = Integer.parseInt(message);
-            if (nc < 0 || nc > 99999) {
+            int intValue = Integer.parseInt(message);
+            if (intValue < 0 || intValue > 99999) {
                 return false;
             }
         } catch (NumberFormatException ex) {
@@ -165,7 +170,8 @@ public class Server {
         
         String[] split = value.split(" ");
         
-        if (!Database.validateCredential(split[0], split[1])) {
+        this.username = split[0];
+        if (!Database.validateCredential(username, split[1])) {
             return false;
         }
         
@@ -225,7 +231,7 @@ public class Server {
         boolean success = false;
         switch (operation) {
             case "TRANSFERT":
-                success = Database.doTransfert(destination, montant);
+                success = Database.doTransfert(username, destination, montant);
                 break;
             case "QUITTER":
                 this.status = WaitingForConnection;

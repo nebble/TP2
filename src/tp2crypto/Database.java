@@ -15,21 +15,31 @@ public class Database {
                 Database.username2.equals(username) && Database.password2.equals(password);
     }
 
-    static boolean doTransfert(String compte, int amount) {
-        switch (compte) {
+    static boolean doTransfert(String from, String to, int amount) {
+        switch (from) {
             case Database.username1:
-                if (Database.solde1 < amount) {
+                if (Database.solde1 < amount || !Database.username2.equals(to)) {
                     return false;
                 }
                 Database.solde1 -= amount;
-                return true;
+                break;
             case Database.username2:
-                if (Database.solde2 < amount) {
+                if (Database.solde2 < amount || !Database.username1.equals(to)) {
                     return false;
                 }
                 Database.solde2 -= amount;
-                return true;
+                break;
+            default:
+                return false;
         }
-        return false;
+        switch (to) {
+            case Database.username1:
+                Database.solde1 += amount;
+                break;
+            case Database.username2:
+                Database.solde2 += amount;
+                break;
+        }
+        return true;
     }
 }

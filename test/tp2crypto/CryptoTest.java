@@ -31,4 +31,10 @@ public class CryptoTest {
         String result = FunctionH.hash("www.desjardins.com VERISIGN 2025 01 01 23 3811");
         assertEquals(expResult, result);
     }
+    
+    @Test
+    public void testDatabase() {
+        boolean result = Database.doTransfert("80123", "3124", 500);
+        assertTrue(result);
+    }
 }

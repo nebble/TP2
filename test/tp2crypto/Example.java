@@ -123,6 +123,7 @@ public class Example {
         server.setNS1("171");
         server.setNS2("20731");
         server.inject(new FakeGenerator("sTEkbg"));
+        server.setUsername("80123");
         
         String result = server.reveiveAndSendBack(MESSAGE_9);
         assertEquals(MESSAGE_10, result);
