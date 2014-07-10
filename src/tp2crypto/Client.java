@@ -4,9 +4,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import static tp2crypto.Status.*;
 
 public class Client {
-    private String status = "closed";
+    private Status status = ConnectionClosed;
     
     private String nc;
     private String nc1;
@@ -61,11 +62,11 @@ public class Client {
         this.passwd = password;
     }
     
-    void setStatus(String status) {
+    void setStatus(Status status) {
         this.status = status;
     }
     
-    public String getStatus() {
+    public Status getStatus() {
         return this.status;
     }
 
@@ -94,15 +95,15 @@ public class Client {
     
     public boolean reveive(String message) {
         switch (status) {
-            case "closed":
+            case ConnectionClosed:
                 return true;
-            case "connected":
+            case ServerConnection:
                 return validateCert(message);
-            case "negotiating":
+            case Negociating:
                 return validateNego(message);
-            case "authenticating":
+            case AtemptingLogging:
                 return validateAuth(message);
-            case "logged":
+            case Logged:
                 return validateOperation(message);
         }
         
@@ -111,15 +112,15 @@ public class Client {
     
     public String sendBack() {
         switch (status) {
-            case "closed":
+            case ConnectionClosed:
                 return initNC0();
-            case "connected":
+            case ServerConnection:
                 return reponseCert();
-            case "negotiating":
+            case Negociating:
                 return responseNego();
-            case "authenticating":
+            case AtemptingLogging:
                 return responseAuth();
-            case "logged":
+            case Logged:
                 return responseOperation();
         }
         
@@ -133,7 +134,7 @@ public class Client {
     
     private String initNC0() {
         this.nc = generator.genRandomN();
-        status = "connected";
+        status = ServerConnection;
         return nc;
     }
     
@@ -178,7 +179,7 @@ public class Client {
     private String reponseCert() {
         this.k0 = generator.genRandomK();
         
-        this.status = "negotiating";
+        this.status = Negociating;
         
         String rsa = Crypto.rsa(k0, serverKey);
         this.m3 = rsa;
@@ -201,7 +202,7 @@ public class Client {
         String h = FunctionH.hash(m);
         
         SymetricKey symKey = getSymKey();
-        this.status = "authenticating";
+        this.status = AtemptingLogging;
         return symKey.crypt(generator.genRandomIV(), h);
     }   
     
@@ -218,7 +219,7 @@ public class Client {
     private String responseAuth() {
         SymetricKey symKey = getSymKey();
         String m = this.numCpt + " " + this.passwd + " " + ns1;
-        this.status = "logged";
+        this.status = Logged;
         return symKey.crypt(generator.genRandomIV(), m);
     }
     

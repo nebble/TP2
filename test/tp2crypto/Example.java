@@ -2,6 +2,7 @@ package tp2crypto;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static tp2crypto.Status.*;
 
 public class Example {
     private static final String MESSAGE_1 = "30161";
@@ -37,7 +38,7 @@ public class Example {
 
     @Test
     public void Step2() {
-        client.setStatus("connected");
+        client.setStatus(ServerConnection);
         client.inject(new FakeGenerator("1716"));
         
         String result = client.reveiveAndSendBack(MESSAGE_2);
@@ -46,7 +47,7 @@ public class Example {
     
     @Test
     public void Step3() {
-        server.setStatus("connected");
+        server.setStatus(ClientConnected);
         server.setNc(MESSAGE_1);
         server.setNs("12150");
         server.inject(new FakeGenerator("b4INtb"));
@@ -58,7 +59,7 @@ public class Example {
     @Test
     public void Step4() {
         
-        client.setStatus("negotiating");
+        client.setStatus(Negociating);
         initKc();
         client.setM2(MESSAGE_2);
         client.setM3(MESSAGE_3);
@@ -70,7 +71,7 @@ public class Example {
     
     @Test
     public void Step5() {
-        server.setStatus("trusted");
+        server.setStatus(TrustEstablished);
         initKs();
         server.setM3(MESSAGE_3);
         server.setM4(MESSAGE_4);
@@ -82,7 +83,7 @@ public class Example {
     
     @Test
     public void Step6() {
-        client.setStatus("authenticating");
+        client.setStatus(AtemptingLogging);
         client.setNumCompte("80123");
         client.setPassword("BN12Z");
         initKc();
@@ -94,7 +95,7 @@ public class Example {
     
     @Test
     public void Step7() {
-        server.setStatus("authenticating");
+        server.setStatus(Authenticate);
         initKs();
         server.setNS1("171");
         server.inject(new FakeGenerator("20731", "20731", "PcO$65"));
@@ -105,7 +106,7 @@ public class Example {
 
     @Test
     public void Step8() {
-        client.setStatus("logged");
+        client.setStatus(Logged);
         client.setNumCompte("80123");
         client.setPassword("BN12Z");
         initKc();
@@ -117,7 +118,7 @@ public class Example {
 
     @Test
     public void Step9() {
-        server.setStatus("clientlogged");
+        server.setStatus(ClientLogged);
         initKs();
         server.setNS1("171");
         server.setNS2("20731");
@@ -129,7 +130,7 @@ public class Example {
     
     @Test
     public void Step10() {
-        client.setStatus("logged");
+        client.setStatus(Logged);
         client.setNumCompte("80123");
         client.setPassword("BN12Z");
         initKc();
@@ -157,7 +158,6 @@ public class Example {
     @Test
     public void allSteps() {
         client.inject(new FakeGenerator(MESSAGE_1));
-        
         String result = client.reveiveAndSendBack(null);
         assertEquals(MESSAGE_1, result);
         

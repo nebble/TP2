@@ -1,8 +1,10 @@
 package tp2crypto;
 
+import static tp2crypto.Status.*;
+
 public class Server {
     private static final Key PRIVATE_KEY = new Key(479, 3811);
-    private String status = "waiting";
+    private Status status = WaitingForConnection;
     private static final String cert = "www.desjardins.com VERISIGN 2025 01 01 23 3811 6069";
     private String nc;
     private String nc1;
@@ -18,7 +20,7 @@ public class Server {
     
     Generator generator = new Generator();
     
-    void setStatus(String status) {
+    void setStatus(Status status) {
         this.status = status;
     }
     
@@ -56,15 +58,15 @@ public class Server {
 
     public boolean reveive(String value) {
         switch (status) {
-            case "waiting":
+            case WaitingForConnection:
                 return validateNc(value);
-            case "connected":
+            case ClientConnected:
                 return validateConnect(value);
-            case "trusted": 
+            case TrustEstablished: 
                 return validateTrusted(value);
-            case "authenticating":
+            case Authenticate:
                 return validateAuth(value);
-            case "clientlogged":
+            case ClientLogged:
                 return validateOperation(value);
         }
         return false;
@@ -72,15 +74,15 @@ public class Server {
     
     public String sendBack() {
         switch (status) {
-            case "waiting":
+            case WaitingForConnection:
                 return responseToClient();
-            case "connected":
+            case ClientConnected:
                 return responseConnected();
-            case "trusted": 
+            case TrustEstablished: 
                 return responseTrusted();
-            case "authenticating":
+            case Authenticate:
                 return responseAuth();
-            case "clientlogged":
+            case ClientLogged:
                 return responseOperation();
         }
         
@@ -105,7 +107,7 @@ public class Server {
     }
 
     private String responseToClient() {
-        status = "connected";
+        status = ClientConnected;
         this.ns = generator.genRandomN();
         return ns + " " + cert;
     }
@@ -120,7 +122,7 @@ public class Server {
         String m = nc + (ns + " " + cert) + m3; // m1 + m2 + m3
         String h = FunctionH.hash(m);
         
-        status = "trusted";
+        status = TrustEstablished;
         this.m4 = getSymKey().crypt(generator.genRandomIV(), h);
         return m4;
     }
@@ -139,7 +141,7 @@ public class Server {
         this.ns1 = generator.genRandomN();
         String ret = "DONNER NUMERO ET MOT DE PASSE " + ns1;
         
-        this.status = "authenticating";
+        this.status = Authenticate;
         SymetricKey symKey = getSymKey();
         return symKey.crypt(generator.genRandomIV(), ret);
     }
@@ -161,7 +163,7 @@ public class Server {
         this.ns2 = generator.genRandomN();
         String ret = "CHOISIR OPERATION TRANSFERT QUITTER " + ns2;
         
-        this.status = "clientlogged";
+        this.status = ClientLogged;
         SymetricKey symKey = getSymKey();
         return symKey.crypt(generator.genRandomIV(), ret);
     }
@@ -193,7 +195,7 @@ public class Server {
                 success = Database.doTransfert(destination, montant);
                 break;
             case "QUITTER":
-                this.status = "waiting";
+                this.status = WaitingForConnection;
                 success = true;
                 break;
         }
