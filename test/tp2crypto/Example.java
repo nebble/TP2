@@ -23,7 +23,7 @@ public class Example {
     public void Step0() {
         client.inject(new FakeGenerator(MESSAGE_1));
         
-        String result = client.receive(null);
+        String result = client.reveiveAndSendBack(null);
         assertEquals(MESSAGE_1, result);
     }
     
@@ -31,7 +31,7 @@ public class Example {
     public void Step1() {
         server.inject(new FakeGenerator("12150"));
         
-        String result = server.receive(MESSAGE_1);
+        String result = server.reveiveAndSendBack(MESSAGE_1);
         assertEquals(MESSAGE_2, result);
     }
 
@@ -40,7 +40,7 @@ public class Example {
         client.setStatus("connected");
         client.inject(new FakeGenerator("1716"));
         
-        String result = client.receive(MESSAGE_2);
+        String result = client.reveiveAndSendBack(MESSAGE_2);
         assertEquals(MESSAGE_3, result);
     }
     
@@ -51,7 +51,7 @@ public class Example {
         server.setNs("12150");
         server.inject(new FakeGenerator("b4INtb"));
         
-        String result = server.receive(MESSAGE_3);
+        String result = server.reveiveAndSendBack(MESSAGE_3);
         assertEquals(MESSAGE_4, result);
     }
     
@@ -64,7 +64,7 @@ public class Example {
         client.setM3(MESSAGE_3);
         client.inject(new FakeGenerator("x3I9AA"));
         
-        String result = client.receive(MESSAGE_4);
+        String result = client.reveiveAndSendBack(MESSAGE_4);
         assertEquals(MESSAGE_5, result);
     }
     
@@ -76,7 +76,7 @@ public class Example {
         server.setM4(MESSAGE_4);
         server.inject(new FakeGenerator("171", "171", "bglDHJ"));
         
-        String result = server.receive(MESSAGE_5);
+        String result = server.reveiveAndSendBack(MESSAGE_5);
         assertEquals(MESSAGE_6, result);
     }
     
@@ -88,7 +88,7 @@ public class Example {
         initKc();
         client.inject(new FakeGenerator("ovI4.H"));
         
-        String result = client.receive(MESSAGE_6);
+        String result = client.reveiveAndSendBack(MESSAGE_6);
         assertEquals(MESSAGE_7, result);
     }
     
@@ -99,7 +99,7 @@ public class Example {
         server.setNS1("171");
         server.inject(new FakeGenerator("20731", "20731", "PcO$65"));
         
-        String result = server.receive(MESSAGE_7);
+        String result = server.reveiveAndSendBack(MESSAGE_7);
         assertEquals(MESSAGE_8, result);
     }
 
@@ -111,7 +111,7 @@ public class Example {
         initKc();
         client.inject(new FakeGenerator("116", "116", "lu7btI"));
         
-        String result = client.receive(MESSAGE_8);
+        String result = client.reveiveAndSendBack(MESSAGE_8);
         assertEquals(MESSAGE_9, result);
     }
 
@@ -123,7 +123,7 @@ public class Example {
         server.setNS2("20731");
         server.inject(new FakeGenerator("sTEkbg"));
         
-        String result = server.receive(MESSAGE_9);
+        String result = server.reveiveAndSendBack(MESSAGE_9);
         assertEquals(MESSAGE_10, result);
     }
     
@@ -134,9 +134,10 @@ public class Example {
         client.setPassword("BN12Z");
         initKc();
         client.inject(new FakeGenerator("116", "116", "lu7btI"));
+        client.setOperation("QUITTER");
         
         String expResult = MESSAGE_11;
-        String result = client.receive(MESSAGE_10);
+        String result = client.reveiveAndSendBack(MESSAGE_10);
         assertEquals(expResult, result);
     }
     
@@ -157,51 +158,52 @@ public class Example {
     public void allSteps() {
         client.inject(new FakeGenerator(MESSAGE_1));
         
-        String result = client.receive(null);
+        String result = client.reveiveAndSendBack(null);
         assertEquals(MESSAGE_1, result);
         
         server.inject(new FakeGenerator("12150"));
-        result = server.receive(MESSAGE_1);
+        result = server.reveiveAndSendBack(MESSAGE_1);
         assertEquals(MESSAGE_2, result);
 
 
         client.inject(new FakeGenerator("1716"));
         String message = MESSAGE_2;
-        result = client.receive(message);
+        result = client.reveiveAndSendBack(message);
         assertEquals(MESSAGE_3, result);
 
         server.inject(new FakeGenerator("b4INtb"));
-        result = server.receive(MESSAGE_3);
+        result = server.reveiveAndSendBack(MESSAGE_3);
         assertEquals(MESSAGE_4, result);
 
         client.inject(new FakeGenerator("x3I9AA"));
-        result = client.receive(MESSAGE_4);
+        result = client.reveiveAndSendBack(MESSAGE_4);
         assertEquals(MESSAGE_5, result);
 
         server.inject(new FakeGenerator("171", "171", "bglDHJ"));
-        result = server.receive(MESSAGE_5);
+        result = server.reveiveAndSendBack(MESSAGE_5);
         assertEquals(MESSAGE_6, result);
 
         client.inject(new FakeGenerator("ovI4.H"));
         client.setNumCompte("80123");
         client.setPassword("BN12Z");
-        result = client.receive("bqlDHJEorWISWxY3vjfWD$uiYt0UL jrwN6ZhI0");
+        result = client.reveiveAndSendBack("bqlDHJEorWISWxY3vjfWD$uiYt0UL jrwN6ZhI0");
         assertEquals(MESSAGE_7, result);
 
         server.inject(new FakeGenerator("20731", "20731", "PcO$65"));
-        result = server.receive(MESSAGE_7);
+        result = server.reveiveAndSendBack(MESSAGE_7);
         assertEquals(MESSAGE_8, result);
 
         client.inject(new FakeGenerator("116", "116", "lu7btI"));
-        result = client.receive(MESSAGE_8);
+        result = client.reveiveAndSendBack(MESSAGE_8);
         assertEquals(MESSAGE_9, result);
 
         server.inject(new FakeGenerator("sTEkbg"));
-        result = server.receive(MESSAGE_9);
+        result = server.reveiveAndSendBack(MESSAGE_9);
         assertEquals(MESSAGE_10, result);
 
         client.inject(new FakeGenerator("116", "116", "lu7btI"));
-        result = client.receive(MESSAGE_10);
+        client.setOperation("QUITTER");
+        result = client.reveiveAndSendBack(MESSAGE_10);
         assertEquals(MESSAGE_11, result);
     }
     

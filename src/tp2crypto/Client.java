@@ -11,6 +11,8 @@ public class Client {
     private String nc;
     private String nc1;
     private String ns;
+    private String ns1;
+    private String ns2;
     private String k0;
     
     private Key serverKey;
@@ -19,9 +21,13 @@ public class Client {
     Generator generator = new Generator();
     private String m2;
     private String m3;
+    private String m4;
     
     private String numCpt;
     private String passwd;
+    private String operation = "TRANSFERT";
+    private String destination = "3124";
+    private String montant = "050$";
     
     public String getNC() {
         return this.nc;
@@ -58,26 +64,66 @@ public class Client {
     void setStatus(String status) {
         this.status = status;
     }
+    
+    public String getStatus() {
+        return this.status;
+    }
+
+    public void setOperation(String operation) {
+        this.operation = operation;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    public void setMontant(String montant) {
+        this.montant = montant;
+    }
 
     void inject(Generator fakeGenerator) {
         this.generator = fakeGenerator;
     }
 
-    public String receive(String message) {
+    public String reveiveAndSendBack(String message) {
+        if (reveive(message)) {
+            return sendBack();
+        }
+        return "ERROR";
+    }
+    
+    public boolean reveive(String message) {
+        switch (status) {
+            case "closed":
+                return true;
+            case "connected":
+                return validateCert(message);
+            case "negotiating":
+                return validateNego(message);
+            case "authenticating":
+                return validateAuth(message);
+            case "logged":
+                return validateOperation(message);
+        }
+        
+        return false;
+    }
+    
+    public String sendBack() {
         switch (status) {
             case "closed":
                 return initNC0();
             case "connected":
-                return validateCert(message);
+                return reponseCert();
             case "negotiating":
-                return process(message);
+                return responseNego();
             case "authenticating":
-                return sendCredentials(message);
+                return responseAuth();
             case "logged":
-                return operation(message);
+                return responseOperation();
         }
         
-        return "";
+        return "ERROR";
     }
     
     private SymetricKey getSymKey() {
@@ -91,7 +137,7 @@ public class Client {
         return nc;
     }
     
-    private String validateCert(String message) {
+    private boolean validateCert(String message) {
         this.m2 = message;
         String[] split = message.split(" ");
         this.ns = split[0];
@@ -105,18 +151,18 @@ public class Client {
         String crypt = split[8];
         
         if (!"www.desjardins.com".equals(website)) {
-            return error("cert has an invalid website");
+            return false;
         }
         if (!"VERISIGN".equals(auth)) {
-            return error("cert is not signed by a thrusted autority");
+            return false;
         }
         try {
             Date date = new SimpleDateFormat("yyyymmdd").parse(year + month + day);
             if (date.before(Calendar.getInstance().getTime())) {
-                return error("cert date is expired");
+                return false;
             }
         } catch (ParseException ex) {
-            return error("cert date format is not valid");
+            return false;
         }
         
         this.serverKey = new Key(Integer.parseInt(e),Integer.parseInt(n));
@@ -124,9 +170,12 @@ public class Client {
         String result = Crypto.rsa(crypt, keyCA);
         String hash = FunctionH.hash(website + " " + auth + " " + year + " " + month + " " + day + " " + e + " " + n);
         if (!result.equals(hash)) {
-            return error("cert signature is incorrect");
+            return false;
         }
-        
+        return true;
+    }
+
+    private String reponseCert() {
         this.k0 = generator.genRandomK();
         
         this.status = "negotiating";
@@ -136,58 +185,70 @@ public class Client {
         return rsa;
     }
 
-    private String process(String message) {
+    private boolean validateNego(String message) {
+        this.m4 = message;
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
         
         String m = nc + m2 + m3;
         String h = FunctionH.hash(m);
         
-        if (!value.equals(h)) {
-            return error("server response doesn't return m1.m2.m3");
-        }
+        return value.equals(h);
+    }
+    
+    private String responseNego() {
+        String m = nc + m2 + m3 + m4;
+        String h = FunctionH.hash(m);
         
-        m += message;
-        h = FunctionH.hash(m);
-        
+        SymetricKey symKey = getSymKey();
         this.status = "authenticating";
         return symKey.crypt(generator.genRandomIV(), h);
     }   
     
-    public String sendCredentials(String message){
+    private boolean validateAuth(String message){
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
         
         String[] split = value.split(" ");
-        int ns1 = Integer.parseInt(split[split.length-1]);
+        this.ns1 = split[split.length - 1];
         
+        return true;
+    }
+        
+    private String responseAuth() {
+        SymetricKey symKey = getSymKey();
         String m = this.numCpt + " " + this.passwd + " " + ns1;
         this.status = "logged";
         return symKey.crypt(generator.genRandomIV(), m);
     }
     
-    private String operation(String message) {
+    private boolean validateOperation(String message) {
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
         String[] values = value.split(" ");
         
         this.nc1 = generator.genRandomN();
-        String response;
         
         if ("CHOISIR".equals(values[0]) && "OPERATION".equals(values[1])) {
-            String ns2 = values[4];
-            response = "TRANSFERT 3124 050$ " + ns2 + " " + nc1;
+            this.ns2 = values[4];
         } else if ("REPONSE".equals(values[0])) {
-            String ns2 = values[1];
-            response = "QUITTER " + ns2 + " " + nc1;
+            this.ns2 = values[1];
         } else {
-            return error("unknown operation");
+            return false;
         }
-        
-        return symKey.crypt(generator.genRandomIV(), response);
+        return true;
     }
     
-    private String error(String reason) {
-        return "ERROR: " + reason;
+    private String responseOperation() {
+        String response;
+        if ("TRANSFERT".equals(this.operation)) {
+            response = "TRANSFERT " + this.destination + " " + this.montant + " " + ns2 + " " + nc1;
+        } else if ("QUITTER".equals(this.operation)) {
+            response = "QUITTER " + ns2 + " " + nc1;
+        } else {
+            return "unknown operation";
+        }
+        SymetricKey symKey = getSymKey();
+        return symKey.crypt(generator.genRandomIV(), response);
     }
 }

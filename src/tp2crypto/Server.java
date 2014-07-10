@@ -5,12 +5,16 @@ public class Server {
     private String status = "waiting";
     private static final String cert = "www.desjardins.com VERISIGN 2025 01 01 23 3811 6069";
     private String nc;
+    private String nc1;
     private String ns;
     private String k0;
     private String ns1;
     private String ns2;
     private String m3;
     private String m4;
+    private String operation;
+    private String destination;
+    private String montant;
     
     Generator generator = new Generator();
     
@@ -50,103 +54,143 @@ public class Server {
         this.ns1 = ns1;
     }
 
-    public String receive(String value) {
+    public boolean reveive(String value) {
         switch (status) {
             case "waiting":
-                return init(value);
+                return validateNc(value);
             case "connected":
-                return accept(value);
+                return validateConnect(value);
             case "trusted": 
-                return process(value);
+                return validateTrusted(value);
             case "authenticating":
-                return verify(value);
+                return validateAuth(value);
             case "clientlogged":
-                return operation(value);
+                return validateOperation(value);
+        }
+        return false;
+    }
+    
+    public String sendBack() {
+        switch (status) {
+            case "waiting":
+                return responseToClient();
+            case "connected":
+                return responseConnected();
+            case "trusted": 
+                return responseTrusted();
+            case "authenticating":
+                return responseAuth();
+            case "clientlogged":
+                return responseOperation();
         }
         
-        return "";
+        return "ERROR";
+    }
+    
+    public String reveiveAndSendBack(String value) {
+        if (reveive(value)) {
+            return sendBack();
+        }
+        return "ERROR";
     }
     
     private SymetricKey getSymKey() {
         int[] k = SymetricKey.generateKey(nc + k0 + ns);
         return new SymetricKey(k);
     }
+    
+    private boolean validateNc(String message) {
+        this.nc = message;
+        return true;
+    }
 
-    private String init(String value) {
+    private String responseToClient() {
         status = "connected";
-        this.nc = value;
         this.ns = generator.genRandomN();
         return ns + " " + cert;
     }
 
-    private String accept(String value) {
+    private boolean validateConnect(String value) {
         this.k0 = Crypto.rsa(value, PRIVATE_KEY);
+        this.m3 = value;
+        return true;
+    }
 
-        String m = nc + (ns + " " + cert) + value; // m1 + m2 + m3
+    private String responseConnected() {
+        String m = nc + (ns + " " + cert) + m3; // m1 + m2 + m3
         String h = FunctionH.hash(m);
         
         status = "trusted";
-        String crypted = getSymKey().crypt(generator.genRandomIV(), h);
-        this.m3 = value;
-        this.m4 = crypted;
-        return crypted;
+        this.m4 = getSymKey().crypt(generator.genRandomIV(), h);
+        return m4;
     }
 
-    private String process(String message) {
+    private boolean validateTrusted(String message) {
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
         
         String m = nc + (ns + " " + cert) + m3 + m4;
         String h = FunctionH.hash(m);
         
-        if (!value.equals(h)) {
-            return error("client response doesn't return m1.m2.m3.m4");
-        }
-        
+        return value.equals(h);
+    }
+    
+    private String responseTrusted() {
         this.ns1 = generator.genRandomN();
         String ret = "DONNER NUMERO ET MOT DE PASSE " + ns1;
         
         this.status = "authenticating";
+        SymetricKey symKey = getSymKey();
         return symKey.crypt(generator.genRandomIV(), ret);
     }
 
-    public String verify(String message){
+    private boolean validateAuth(String message){
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
         
         String[] split = value.split(" ");
         
         if (!Database.validateCredential(split[0], split[1])) {
-            return error("credential are invalid");
+            return false;
         }
         
-        if(!split[2].equals(this.ns1)) {
-            return error("value of ns1 has changed");
-        }
-        
+        return split[2].equals(this.ns1);
+    }
+    
+    private String responseAuth() {
         this.ns2 = generator.genRandomN();
         String ret = "CHOISIR OPERATION TRANSFERT QUITTER " + ns2;
         
         this.status = "clientlogged";
+        SymetricKey symKey = getSymKey();
         return symKey.crypt(generator.genRandomIV(), ret);
     }
     
-    public String operation(String message) {
+    private boolean validateOperation(String message) {
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
         
         String[] values = value.split(" ");
         
         if (!this.ns2.equals(values[3])) {
-            return error("value of ns2 has changed");
+            return false;
         }
 
-        String nc1 = values[4];
-        boolean success = false;
+        this.nc1 = values[4];
+        this.operation = values[0];
+        if ("TRANSFERT".equals(operation)) {
+            this.destination = values[1];
+            this.montant = values[2];
+            return true;
+        }
+        return "QUITTER".equals(operation);
+    }
         
-        switch (values[0]) {
+    private String responseOperation() {
+        boolean success = false;
+        switch (operation) {
             case "TRANSFERT":
-                success = Database.doTransfert(values[1], values[2]);
+                success = Database.doTransfert(destination, montant);
                 break;
             case "QUITTER":
                 this.status = "waiting";
@@ -155,10 +199,7 @@ public class Server {
         }
         
         String response = "REPONSE " + (success ? "1" : "0") + " " + nc1;
+        SymetricKey symKey = getSymKey();
         return symKey.crypt(generator.genRandomIV(), response);
-    }
-    
-    private String error(String reason) {
-        return "ERROR: " + reason;
     }
 }
