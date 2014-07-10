@@ -248,7 +248,6 @@ public class Client {
         } else {
             return "unknown operation";
         }
-        System.out.println(response);
         SymetricKey symKey = getSymKey();
         return symKey.crypt(generator.genRandomIV(), response);
     }

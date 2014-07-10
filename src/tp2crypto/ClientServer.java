@@ -772,16 +772,16 @@ public class ClientServer extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnStep3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep3ActionPerformed
-        debug();
+        
         if (status == Status.WaitingForConnection && messageServerSended) {
             this.status = Status.ServerConnection;
         }
-        if (status != Status.ServerConnection) {
-            error("Le client n'est pas prêt pour cette étape.");
-            return;
-        }
         if (!messageServerSended) {
             error("La réponse du serveur n'a pas été encore reçu.");
+            return;
+        }
+        if (status != Status.ServerConnection) {
+            error("Le client n'est pas prêt pour cette étape.");
             return;
         }
         client.setStatus(status);
@@ -805,7 +805,7 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_radioTransfertActionPerformed
 
     private void btnStep1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep1ActionPerformed
-        debug();
+        
         if (status != Status.ConnectionClosed) {
             error("Le client n'est pas prêt pour cette étape.");
             return;
@@ -840,16 +840,16 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRecommencerActionPerformed
 
     private void btnStep4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep4ActionPerformed
-        debug();
+        
         if (status == Status.ServerConnection && messageClientSended) {
             this.status = Status.ClientConnected;
         }
-        if (status != Status.ClientConnected) {
-            error("Le serveur n'est pas prêt pour cette étape.");
-            return;
-        }
         if (!messageClientSended) {
             error("La réponse du client n'a pas été encore reçu.");
+            return;
+        }
+        if (status != Status.ClientConnected) {
+            error("Le serveur n'est pas prêt pour cette étape.");
             return;
         }
         server.setStatus(status);
@@ -876,7 +876,7 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_txtIV9ActionPerformed
 
     private void btnEnvoyerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnvoyerActionPerformed
-        debug();
+        
         boolean isServer = false;
         switch (status) {
             case ConnectionClosed:
@@ -939,16 +939,16 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEnvoyerActionPerformed
 
     private void btnStep2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep2ActionPerformed
-        debug();
+        
         if (status == Status.ConnectionClosed && messageClientSended) {
             this.status = Status.WaitingForConnection;
         }
-        if (status != Status.WaitingForConnection) {
-            error("Server not ready for this step");
-            return;
-        }
         if (!messageClientSended) {
             error("No response sended from the client yet.");
+            return;
+        }
+        if (status != Status.WaitingForConnection) {
+            error("Server not ready for this step");
             return;
         }
         server.setStatus(status);
@@ -968,16 +968,16 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStep2ActionPerformed
 
     private void btnStep5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep5ActionPerformed
-        debug();
+        
         if (status == Status.ClientConnected && messageServerSended) {
             this.status = Status.Negociating;
         }
-        if (status != Status.Negociating) {
-            error("Le client n'est pas prêt pour cette étape.");
-            return;
-        }
         if (!messageServerSended) {
             error("La réponse du serveur n'a pas été encore reçu.");
+            return;
+        }
+        if (status != Status.Negociating) {
+            error("Le client n'est pas prêt pour cette étape.");
             return;
         }
         client.setStatus(status);
@@ -1000,16 +1000,16 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStep5ActionPerformed
 
     private void btnStep6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep6ActionPerformed
-        debug();
+        
         if (status == Status.Negociating && messageClientSended) {
             this.status = Status.TrustEstablished;
         }
-        if (status != Status.TrustEstablished) {
-            error("Le serveur n'est pas prêt pour cette étape.");
-            return;
-        }
         if (!messageClientSended) {
             error("La réponse du client n'a pas été encore reçu.");
+            return;
+        }
+        if (status != Status.TrustEstablished) {
+            error("Le serveur n'est pas prêt pour cette étape.");
             return;
         }
         server.setStatus(status);
@@ -1041,16 +1041,16 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStep6ActionPerformed
 
     private void btnStep7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep7ActionPerformed
-        debug();
+        
         if (status == Status.TrustEstablished && messageServerSended) {
             this.status = Status.AtemptingLogging;
         }
-        if (status != Status.AtemptingLogging) {
-            error("Le client n'est pas prêt pour cette étape.");
-            return;
-        }
         if (!messageServerSended) {
             error("La réponse du client n'a pas été encore reçu.");
+            return;
+        }
+        if (status != Status.AtemptingLogging) {
+            error("Le client n'est pas prêt pour cette étape.");
             return;
         }
         client.setStatus(status);
@@ -1079,16 +1079,16 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStep7ActionPerformed
 
     private void btnStep8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep8ActionPerformed
-        debug();
+        
         if (status == Status.AtemptingLogging && messageClientSended) {
             this.status = Status.Authenticate;
         }
-        if (status != Status.Authenticate) {
-            error("Le serveur n'est pas prêt pour cette étape.");
-            return;
-        }
         if (!messageClientSended) {
             error("La réponse du client n'a pas été encore reçu.");
+            return;
+        }
+        if (status != Status.Authenticate) {
+            error("Le serveur n'est pas prêt pour cette étape.");
             return;
         }
         server.setStatus(status);
@@ -1120,16 +1120,16 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStep8ActionPerformed
 
     private void btnStep9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep9ActionPerformed
-        debug();
+        
         if (status == Status.Authenticate && messageServerSended) {
             this.status = Status.Logged;
         }
-        if (status != Status.Logged) {
-            error("Le client n'est pas prêt pour cette étape.");
-            return;
-        }
         if (!messageServerSended) {
             error("La réponse du client n'a pas été encore reçu.");
+            return;
+        }
+        if (status != Status.Logged) {
+            error("Le client n'est pas prêt pour cette étape.");
             return;
         }
         client.setStatus(status);
@@ -1167,7 +1167,7 @@ public class ClientServer extends javax.swing.JFrame {
                 return;
             }
         }
-        System.out.println(txtNc1.getText());
+        
         client.inject(new FakeGenerator(txtNc1.getText(), txtNc1.getText(), txtIV9.getText()));
         client.setDestination(txtDestination.getText());
         client.setMontant(txtMontant.getText());
@@ -1177,18 +1177,19 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStep9ActionPerformed
 
     private void btnStep10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep10ActionPerformed
-        debug();
+        
         if (status == Status.Logged && messageClientSended) {
             this.status = Status.ClientLogged;
-        }
-        if (status != Status.ClientLogged) {
-            error("Le serveur n'est pas prêt pour cette étape.");
-            return;
         }
         if (!messageClientSended) {
             error("La réponse du client n'a pas été encore reçu.");
             return;
         }
+        if (status != Status.ClientLogged) {
+            error("Le serveur n'est pas prêt pour cette étape.");
+            return;
+        }
+        
         server.setStatus(status);
         
         if (txtIV10.getText().isEmpty()) {
@@ -1228,12 +1229,6 @@ public class ClientServer extends javax.swing.JFrame {
             }
         }
         return "";
-    }
-    
-    private void debug() {
-        System.out.println(status);
-        System.out.println("Client: " + client.getStatus());
-        System.out.println("Server: " + server.getStatus());
     }
     
     /**
