@@ -23,6 +23,10 @@ public class Server {
     void setStatus(Status status) {
         this.status = status;
     }
+
+    public Status getStatus() {
+        return status;
+    }
     
     public void setNc(String nc) {
         this.nc = nc;
@@ -102,6 +106,15 @@ public class Server {
     }
     
     private boolean validateNc(String message) {
+        try {
+            int nc = Integer.parseInt(message);
+            if (nc < 0 || nc > 99999) {
+                return false;
+            }
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+        
         this.nc = message;
         return true;
     }

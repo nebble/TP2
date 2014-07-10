@@ -6,6 +6,9 @@
 
 package tp2crypto;
 
+import java.util.Enumeration;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
 
 /**
@@ -14,10 +17,12 @@ import javax.swing.JOptionPane;
  */
 public class ClientServer extends javax.swing.JFrame {
 
-    private Generator generator = new Generator();
+    private final Generator generator = new Generator();
     private Server server = new Server();
     private Client client = new Client();
     private Status status = Status.ConnectionClosed;
+    private boolean messageClientSended = false;
+    private boolean messageServerSended = false;
     
     /**
      * Creates new form ClientServer
@@ -116,6 +121,11 @@ public class ClientServer extends javax.swing.JFrame {
         txtNs.setPreferredSize(new java.awt.Dimension(25, 28));
 
         btnStep2.setText("2");
+        btnStep2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStep2ActionPerformed(evt);
+            }
+        });
 
         jLabel5.setText("IV");
 
@@ -135,6 +145,11 @@ public class ClientServer extends javax.swing.JFrame {
         txtIV6.setPreferredSize(new java.awt.Dimension(25, 28));
 
         btnStep6.setText("6");
+        btnStep6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStep6ActionPerformed(evt);
+            }
+        });
 
         jLabel7.setText("IV");
 
@@ -142,6 +157,11 @@ public class ClientServer extends javax.swing.JFrame {
         txtIV8.setPreferredSize(new java.awt.Dimension(25, 28));
 
         btnStep8.setText("8");
+        btnStep8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStep8ActionPerformed(evt);
+            }
+        });
 
         jLabel8.setText("IV");
 
@@ -413,10 +433,25 @@ public class ClientServer extends javax.swing.JFrame {
         });
 
         btnStep5.setText("5");
+        btnStep5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStep5ActionPerformed(evt);
+            }
+        });
 
         btnStep7.setText("7");
+        btnStep7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStep7ActionPerformed(evt);
+            }
+        });
 
         btnStep9.setText("9");
+        btnStep9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStep9ActionPerformed(evt);
+            }
+        });
 
         jPanel4.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
@@ -734,7 +769,29 @@ public class ClientServer extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnStep3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep3ActionPerformed
-        // TODO add your handling code here:
+        if (status != Status.WaitingForConnection || client.getStatus() != Status.ServerConnection) {
+            error("Le client n'est pas prêt pour cette étape.");
+            return;
+        }
+        if (!messageServerSended) {
+            error("La réponse du serveur n'a pas été encore reçu.");
+            return;
+        }
+        this.status = Status.ServerConnection;
+        client.setStatus(status);
+        
+        if (txtK0.getText().isEmpty()) {
+            txtK0.setText(generator.genRandomK());
+        }
+        int k0 = getAsInt(txtK0.getText());
+        if (k0 < 2 || k0 > 3810) {
+            error("K0 doit être entre 2 et 3810");
+            return;
+        }
+        client.inject(new FakeGenerator(txtK0.getText()));
+        String message = client.sendBack();
+        txtMessageEchange.setText(message);
+        messageServerSended = false;
     }//GEN-LAST:event_btnStep3ActionPerformed
 
     private void radioTransfertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioTransfertActionPerformed
@@ -743,7 +800,7 @@ public class ClientServer extends javax.swing.JFrame {
 
     private void btnStep1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep1ActionPerformed
         if (status != Status.ConnectionClosed) {
-            error("Client not ready for this step");
+            error("Le client n'est pas prêt pour cette étape.");
             return;
         }
         
@@ -763,15 +820,44 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStep1ActionPerformed
 
     private void btnRecommencerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRecommencerActionPerformed
-        if ("0".equals(txtRecommencer.getText())) {
+        //if ("0".equals(txtRecommencer.getText())) {
             client = new Client();
             server = new Server();
-        } else if ("1".equals(txtRecommencer.getText())) {
-        }
+            status = Status.ConnectionClosed;
+            String message = "Résultat de vérification (échec ou réussite): ";
+            lblClientMessage.setText(message);
+            lblServerMessage.setText(message);
+        /*} else if ("1".equals(txtRecommencer.getText())) {
+        }*/
     }//GEN-LAST:event_btnRecommencerActionPerformed
 
     private void btnStep4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep4ActionPerformed
-        // TODO add your handling code here:
+        if (status != Status.ServerConnection || server.getStatus() != Status.ClientConnected) {
+            error("Le serveur n'est pas prêt pour cette étape.");
+            return;
+        }
+        if (!messageClientSended) {
+            error("La réponse du client n'a pas été encore reçu.");
+            return;
+        }
+        this.status = Status.ClientConnected;
+        server.setStatus(status);
+        
+        if (txtIV4.getText().isEmpty()) {
+            txtIV4.setText(generator.genRandomIV());
+        }
+        if (txtIV4.getText().length() != 6) {
+            error("IV doit être de 6 caractères");
+            return;
+        }
+        if (Language.isValid(txtIV4.getText())) {
+            error("IV doit être inclus dans le Langage L0");
+            return;
+        }
+        server.inject(new FakeGenerator(txtIV4.getText()));
+        String message = server.sendBack();
+        txtMessageEchange.setText(message);
+        messageClientSended = false;
     }//GEN-LAST:event_btnStep4ActionPerformed
 
     private void txtIV9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIV9ActionPerformed
@@ -779,30 +865,287 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_txtIV9ActionPerformed
 
     private void btnEnvoyerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnvoyerActionPerformed
+
+        boolean isServer = false;
         switch (status) {
             case ConnectionClosed:
+                server.setStatus(Status.WaitingForConnection);
+                isServer = true;
+                break;
             case ServerConnection:
+                server.setStatus(Status.ClientConnected);
+                isServer = true;
+                break;
             case Negociating:
+                server.setStatus(Status.TrustEstablished);
+                isServer = true;
+                break;
             case AtemptingLogging:
+                server.setStatus(Status.Authenticate);
+                isServer = true;
+                break;
             case Logged:
-                boolean serverSuccess = server.reveive(txtMessageEchange.getText());
-                String serverMessage = "Résultat de vérification (échec ou réussite): ";
-                serverMessage += serverSuccess ? "RÉUSSITE" : "ÉCHEC";
-                lblServerMessage.setText(serverMessage);
+                server.setStatus(Status.ClientLogged);
+                isServer = true;
                 break;
-                
             case WaitingForConnection:
-            case ClientConnected:
-            case TrustEstablished: 
-            case Authenticate:
-            case ClientLogged:
-                boolean clientSucess = client.reveive(txtMessageEchange.getText());
-                String clientMessage = "Résultat de vérification (échec ou réussite): ";
-                clientMessage += clientSucess ? "RÉUSSITE" : "ÉCHEC";
-                lblClientMessage.setText(clientMessage);
+                client.setStatus(Status.ServerConnection);
+                isServer = false;
                 break;
+            case ClientConnected:
+                client.setStatus(Status.Negociating);
+                isServer = false;
+                break;
+            case TrustEstablished: 
+                client.setStatus(Status.AtemptingLogging);
+                isServer = false;
+                break;
+            case Authenticate:
+                client.setStatus(Status.Logged);
+                isServer = false;
+                break;
+            case ClientLogged:
+                client.setStatus(Status.ConnectionClosed);
+                isServer = false;
+                break;    
+        }
+        
+        if (isServer) {
+            boolean serverSuccess = server.reveive(txtMessageEchange.getText());
+            String serverMessage = "Résultat de vérification (échec ou réussite): ";
+            lblClientMessage.setText(serverMessage);
+            serverMessage += serverSuccess ? "RÉUSSITE" : "ÉCHEC";
+            lblServerMessage.setText(serverMessage);
+            messageClientSended = serverSuccess;
+        } else {
+            boolean clientSucess = client.reveive(txtMessageEchange.getText());
+            String clientMessage = "Résultat de vérification (échec ou réussite): ";
+            lblServerMessage.setText(clientMessage);
+            clientMessage += clientSucess ? "RÉUSSITE" : "ÉCHEC";
+            lblClientMessage.setText(clientMessage);
+            messageServerSended = clientSucess;
         }
     }//GEN-LAST:event_btnEnvoyerActionPerformed
+
+    private void btnStep2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep2ActionPerformed
+        if (status != Status.ConnectionClosed || server.getStatus() != Status.WaitingForConnection) {
+            error("Server not ready for this step");
+            return;
+        }
+        if (!messageClientSended) {
+            error("No response sended from the client yet.");
+            return;
+        }
+        this.status = Status.WaitingForConnection;
+        server.setStatus(status);
+        
+        if (txtNs.getText().isEmpty()) {
+            txtNs.setText(generator.genRandomN());
+        }
+        int ns = getAsInt(txtNs.getText());
+        if (ns < 0 || ns > 99999) {
+            error("Ns doit être entre 0 et 99999");
+            return;
+        }
+        server.inject(new FakeGenerator(txtNs.getText()));
+        String message = server.sendBack();
+        txtMessageEchange.setText(message);
+        messageClientSended = false;
+    }//GEN-LAST:event_btnStep2ActionPerformed
+
+    private void btnStep5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep5ActionPerformed
+        if (status != Status.ClientConnected || client.getStatus() != Status.Negociating) {
+            error("Le client n'est pas prêt pour cette étape.");
+            return;
+        }
+        if (!messageServerSended) {
+            error("La réponse du serveur n'a pas été encore reçu.");
+            return;
+        }
+        this.status = Status.Negociating;
+        client.setStatus(status);
+        
+        if (txtIV5.getText().isEmpty()) {
+            txtIV5.setText(generator.genRandomIV());
+        }
+        if (txtIV5.getText().length() != 6) {
+            error("IV doit être de 6 caractères");
+            return;
+        }
+        if (Language.isValid(txtIV5.getText())) {
+            error("IV doit être inclus dans le Langage L0");
+            return;
+        }
+        client.inject(new FakeGenerator(txtIV5.getText()));
+        String message = client.sendBack();
+        txtMessageEchange.setText(message);
+        messageServerSended = false;
+    }//GEN-LAST:event_btnStep5ActionPerformed
+
+    private void btnStep6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep6ActionPerformed
+        if (status != Status.Negociating || server.getStatus() != Status.TrustEstablished) {
+            error("Le serveur n'est pas prêt pour cette étape.");
+            return;
+        }
+        if (!messageClientSended) {
+            error("La réponse du client n'a pas été encore reçu.");
+            return;
+        }
+        this.status = Status.TrustEstablished;
+        server.setStatus(status);
+        
+        if (txtNs1.getText().isEmpty()) {
+            txtNs1.setText(generator.genRandomN());
+        }
+        int ns = getAsInt(txtNs1.getText());
+        if (ns < 0 || ns > 99999) {
+            error("Ns1 doit être entre 0 et 99999");
+            return;
+        }
+        
+        if (txtIV6.getText().isEmpty()) {
+            txtIV6.setText(generator.genRandomIV());
+        }
+        if (txtIV6.getText().length() != 6) {
+            error("IV doit être de 6 caractères");
+            return;
+        }
+        if (Language.isValid(txtIV6.getText())) {
+            error("IV doit être inclus dans le Langage L0");
+            return;
+        }
+        server.inject(new FakeGenerator(txtNs1.getText(), txtNs1.getText(), txtIV6.getText()));
+        String message = server.sendBack();
+        txtMessageEchange.setText(message);
+        messageClientSended = false;
+    }//GEN-LAST:event_btnStep6ActionPerformed
+
+    private void btnStep7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep7ActionPerformed
+        if (status != Status.TrustEstablished || client.getStatus() != Status.AtemptingLogging) {
+            error("Le client n'est pas prêt pour cette étape.");
+            return;
+        }
+        if (!messageServerSended) {
+            error("La réponse du client n'a pas été encore reçu.");
+            return;
+        }
+        this.status = Status.AtemptingLogging;
+        client.setStatus(status);
+        
+        if (txtIV7.getText().isEmpty()) {
+            txtIV7.setText(generator.genRandomIV());
+        }
+        if (txtIV7.getText().length() != 6) {
+            error("IV doit être de 6 caractères");
+            return;
+        }
+        if (Language.isValid(txtIV7.getText())) {
+            error("IV doit être inclus dans le Langage L0");
+            return;
+        }
+        if (txtId.getText().isEmpty() || txtPassword.getText().isEmpty()) {
+            error("Vous devez entrer l'authentification à cette étape.");
+            return;
+        }
+        client.inject(new FakeGenerator(txtIV7.getText()));
+        client.setNumCompte(txtId.getText());
+        client.setPassword(txtPassword.getText());
+        String message = client.sendBack();
+        txtMessageEchange.setText(message);
+        messageServerSended = false;
+    }//GEN-LAST:event_btnStep7ActionPerformed
+
+    private void btnStep8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep8ActionPerformed
+        if (status != Status.AtemptingLogging || server.getStatus() != Status.Authenticate) {
+            error("Le serveur n'est pas prêt pour cette étape.");
+            return;
+        }
+        if (!messageClientSended) {
+            error("La réponse du client n'a pas été encore reçu.");
+            return;
+        }
+        this.status = Status.Authenticate;
+        server.setStatus(status);
+        
+        if (txtNs2.getText().isEmpty()) {
+            txtNs2.setText(generator.genRandomN());
+        }
+        int ns = getAsInt(txtNs2.getText());
+        if (ns < 0 || ns > 99999) {
+            error("Ns2 doit être entre 0 et 99999");
+            return;
+        }
+        
+        if (txtIV8.getText().isEmpty()) {
+            txtIV8.setText(generator.genRandomIV());
+        }
+        if (txtIV8.getText().length() != 6) {
+            error("IV doit être de 6 caractères");
+            return;
+        }
+        if (Language.isValid(txtIV8.getText())) {
+            error("IV doit être inclus dans le Langage L0");
+            return;
+        }
+        server.inject(new FakeGenerator(txtNs2.getText(), txtNs2.getText(), txtIV8.getText()));
+        String message = server.sendBack();
+        txtMessageEchange.setText(message);
+        messageClientSended = false;
+    }//GEN-LAST:event_btnStep8ActionPerformed
+
+    private void btnStep9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep9ActionPerformed
+        if (status != Status.Authenticate || client.getStatus() != Status.Logged) {
+            error("Le client n'est pas prêt pour cette étape.");
+            return;
+        }
+        if (!messageServerSended) {
+            error("La réponse du client n'a pas été encore reçu.");
+            return;
+        }
+        this.status = Status.Logged;
+        client.setStatus(status);
+        
+        if (txtNc1.getText().isEmpty()) {
+            txtNc1.setText(generator.genRandomN());
+        }
+        int nc1 = getAsInt(txtNc1.getText());
+        if (nc1 < 0 || nc1 > 99999) {
+            error("Nc1 doit être entre 0 et 99999");
+            return;
+        }
+        
+        if (txtIV9.getText().isEmpty()) {
+            txtIV9.setText(generator.genRandomIV());
+        }
+        if (txtIV9.getText().length() != 6) {
+            error("IV doit être de 6 caractères");
+            return;
+        }
+        if (Language.isValid(txtIV9.getText())) {
+            error("IV doit être inclus dans le Langage L0");
+            return;
+        }
+        
+        String operation = getSelected(btnGrpOperation);
+        
+        if ("TRANSFERT".equals(operation)) {
+            if (txtDestination.getText().isEmpty()) {
+                error("La destination doit être entré pour cette operation.");
+                return;
+            }
+            if (txtMontant.getText().isEmpty()) {
+                error("Le montant doit être entré pour cette operation.");
+                return;
+            }
+        }
+        
+        client.inject(new FakeGenerator(txtNc1.getText(), txtNc1.getText(), txtIV9.getText()));
+        client.setDestination(txtDestination.getText());
+        client.setMontant(txtMontant.getText());
+        String message = client.sendBack();
+        txtMessageEchange.setText(message);
+        messageServerSended = false;
+    }//GEN-LAST:event_btnStep9ActionPerformed
 
     private void error(String error) {
         JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
@@ -814,6 +1157,16 @@ public class ClientServer extends javax.swing.JFrame {
         } catch (NumberFormatException ex) {
             return -1;
         }
+    }
+    
+    private String getSelected(ButtonGroup btnGrp) {
+        for (Enumeration<AbstractButton> buttons = btnGrp.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+            if (button.isSelected()) {
+                return button.getText();
+            }
+        }
+        return "";
     }
     
     /**

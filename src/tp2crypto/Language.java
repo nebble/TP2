@@ -37,4 +37,14 @@ public class Language {
         
         return res;
     }
+
+    static boolean isValid(String text) {
+        for(char c : text.toCharArray()){
+            if (!alphabet.contains(String.valueOf(c)))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }
