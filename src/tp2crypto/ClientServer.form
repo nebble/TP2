@@ -687,6 +687,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="1"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnStep1ActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnStep3">
           <Properties>
@@ -930,6 +933,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Recommencer"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRecommencerActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="txtRecommencer">
         </Component>

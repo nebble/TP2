@@ -6,12 +6,18 @@
 
 package tp2crypto;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author carlbelanger
  */
 public class ClientServer extends javax.swing.JFrame {
 
+    private Generator generator = new Generator();
+    private Server server = new Server();
+    private Client client = new Client();
+    
     /**
      * Creates new form ClientServer
      */
@@ -352,6 +358,11 @@ public class ClientServer extends javax.swing.JFrame {
         txtNc.setName(""); // NOI18N
 
         btnStep1.setText("1");
+        btnStep1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStep1ActionPerformed(evt);
+            }
+        });
 
         btnStep3.setText("3");
         btnStep3.addActionListener(new java.awt.event.ActionListener() {
@@ -490,6 +501,11 @@ public class ClientServer extends javax.swing.JFrame {
         );
 
         btnRecommencer.setText("Recommencer");
+        btnRecommencer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRecommencerActionPerformed(evt);
+            }
+        });
 
         lblClientMessage.setText("Résultat: ");
         lblClientMessage.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
@@ -664,6 +680,46 @@ public class ClientServer extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_radioTransfertActionPerformed
 
+    private void btnStep1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep1ActionPerformed
+        if (!"closed".equals(client.getStatus())) {
+            error("Client not ready for this step");
+            return;
+        }
+        
+        if (txtNc.getText().isEmpty()) {
+            txtNc.setText(generator.genRandomN());
+        }
+        int tmpNc = getAsInt(txtNc.getText());
+        if (tmpNc < 0 || tmpNc > 99999) {
+            error("Nc doit être entre 0 et 99999");
+            return;
+        }
+        client.inject(new FakeGenerator(txtNc.getText()));
+        String message = client.reveiveAndSendBack(null);
+        txtMessageEchange.setText(message);
+    }//GEN-LAST:event_btnStep1ActionPerformed
+
+    private void btnRecommencerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRecommencerActionPerformed
+        if ("0".equals(txtRecommencer.getText())) {
+            client = new Client();
+            server = new Server();
+        } else if ("1".equals(txtRecommencer.getText())) {
+            
+        } 
+    }//GEN-LAST:event_btnRecommencerActionPerformed
+
+    private void error(String error) {
+        JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    
+    private int getAsInt(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+            return -1;
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */
