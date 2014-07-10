@@ -1172,7 +1172,7 @@ public class ClientServer extends javax.swing.JFrame {
                 error("Le montant doit être saisie pour cette operation.");
                 return;
             }
-            if (isMontantValid(txtMontant.getText())) {
+            if (!isMontantValid(txtMontant.getText())) {
                 error("Le montant doit être au format AAA$ (trois chiffre et un signe '$').");
                 return;
             }
