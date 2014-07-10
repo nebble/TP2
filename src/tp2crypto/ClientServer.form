@@ -87,15 +87,23 @@
                                           </Group>
                                       </Group>
                                   </Group>
-                                  <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                       <Group type="102" attributes="0">
                                           <EmptySpace min="-2" pref="87" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
                                               <Group type="102" alignment="0" attributes="0">
+                                                  <Component id="btnStep8" min="-2" pref="50" max="-2" attributes="0"/>
+                                                  <EmptySpace max="32767" attributes="0"/>
+                                                  <Component id="btnStep10" min="-2" pref="50" max="-2" attributes="0"/>
+                                                  <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
+                                              </Group>
+                                              <Group type="102" alignment="0" attributes="0">
                                                   <EmptySpace min="20" pref="20" max="-2" attributes="0"/>
                                                   <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace max="32767" attributes="0"/>
+                                                  <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                                               </Group>
-                                              <Component id="btnStep8" alignment="0" min="-2" pref="50" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
@@ -104,7 +112,7 @@
                                               <Component id="txtNs2" min="-2" pref="75" max="-2" attributes="0"/>
                                               <Group type="102" attributes="0">
                                                   <Component id="txtIV8" min="-2" pref="75" max="-2" attributes="0"/>
-                                                  <EmptySpace min="-2" pref="49" max="-2" attributes="0"/>
+                                                  <EmptySpace min="-2" pref="60" max="-2" attributes="0"/>
                                                   <Component id="txtIV10" min="-2" pref="75" max="-2" attributes="0"/>
                                               </Group>
                                           </Group>
@@ -156,14 +164,6 @@
                                   <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="117" max="-2" attributes="0"/>
                                   <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="100" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="btnStep10" alignment="0" min="-2" pref="50" max="-2" attributes="0"/>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
-                                          <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                  </Group>
                               </Group>
                           </Group>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -222,24 +222,24 @@
                                   <Component id="btnStep6" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="1" attributes="0">
-                                  <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="txtIV8" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="txtIV10" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="btnStep8" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="btnStep8" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="btnStep10" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
                           </Group>
                       </Group>
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" pref="68" max="-2" attributes="0"/>
-                          <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
-                          <Component id="btnStep10" min="-2" max="-2" attributes="0"/>
-                      </Group>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
                   <Component id="lblServerMessage" min="-2" max="-2" attributes="0"/>
@@ -400,7 +400,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="lblServerMessage">
           <Properties>
-            <Property name="text" type="java.lang.String" value="R&#xe9;sultat: "/>
+            <Property name="text" type="java.lang.String" value="R&#xe9;sultat de v&#xe9;rification (&#xe9;chec ou r&#xe9;ussite): "/>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.BevelBorderInfo">
                 <BevelBorder bevelType="1"/>
@@ -634,14 +634,13 @@
                               <Group type="102" attributes="0">
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="btnRecommencer" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
-                              <Group type="102" alignment="1" attributes="0">
-                                  <EmptySpace max="32767" attributes="0"/>
-                                  <Component id="txtRecommencer" min="-2" pref="50" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
+                                  <Component id="btnHelp" min="-2" pref="40" max="-2" attributes="0"/>
                               </Group>
                           </Group>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -699,8 +698,8 @@
                           <EmptySpace max="32767" attributes="0"/>
                           <Component id="btnRecommencer" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="txtRecommencer" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
+                          <Component id="btnHelp" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
@@ -1075,17 +1074,23 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRecommencerActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JTextField" name="txtRecommencer">
-        </Component>
         <Component class="javax.swing.JLabel" name="lblClientMessage">
           <Properties>
-            <Property name="text" type="java.lang.String" value="R&#xe9;sultat: "/>
+            <Property name="text" type="java.lang.String" value="R&#xe9;sultat de v&#xe9;rification (&#xe9;chec ou r&#xe9;ussite): "/>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.BevelBorderInfo">
                 <BevelBorder bevelType="1"/>
               </Border>
             </Property>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnHelp">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="?"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnHelpActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

@@ -102,8 +102,8 @@ public class ClientServer extends javax.swing.JFrame {
         jLabel21 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
         btnRecommencer = new javax.swing.JButton();
-        txtRecommencer = new javax.swing.JTextField();
         lblClientMessage = new javax.swing.JLabel();
+        btnHelp = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -185,7 +185,7 @@ public class ClientServer extends javax.swing.JFrame {
 
         jLabel10.setText("Ns1");
 
-        lblServerMessage.setText("Résultat: ");
+        lblServerMessage.setText("Résultat de vérification (échec ou réussite): ");
         lblServerMessage.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -209,21 +209,28 @@ public class ClientServer extends javax.swing.JFrame {
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addComponent(txtNs1, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
                                             .addComponent(txtIV6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addGap(87, 87, 87)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(btnStep8, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(btnStep10, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(11, 11, 11))
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
                                                 .addGap(20, 20, 20)
-                                                .addComponent(jLabel7))
-                                            .addComponent(btnStep8, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addComponent(jLabel7)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(jLabel8)
+                                                .addGap(32, 32, 32))))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addGap(76, 76, 76)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(txtNs2, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addGroup(jPanel1Layout.createSequentialGroup()
                                                 .addComponent(txtIV8, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(49, 49, 49)
+                                                .addGap(60, 60, 60)
                                                 .addComponent(txtIV10, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -256,13 +263,7 @@ public class ClientServer extends javax.swing.JFrame {
                                 .addGap(99, 99, 99)
                                 .addComponent(jLabel10)
                                 .addGap(117, 117, 117)
-                                .addComponent(jLabel9)
-                                .addGap(100, 100, 100)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnStep10, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(15, 15, 15)
-                                        .addComponent(jLabel8)))))
+                                .addComponent(jLabel9)))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
@@ -307,19 +308,18 @@ public class ClientServer extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnStep6))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel7)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel7)
+                                    .addComponent(jLabel8))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(txtIV8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(txtIV10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnStep8))))
-                    .addComponent(jLabel1)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(68, 68, 68)
-                        .addComponent(jLabel8)
-                        .addGap(40, 40, 40)
-                        .addComponent(btnStep10)))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btnStep8)
+                                    .addComponent(btnStep10)))))
+                    .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblServerMessage)
                 .addGap(52, 52, 52))
@@ -586,8 +586,15 @@ public class ClientServer extends javax.swing.JFrame {
             }
         });
 
-        lblClientMessage.setText("Résultat: ");
+        lblClientMessage.setText("Résultat de vérification (échec ou réussite): ");
         lblClientMessage.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+
+        btnHelp.setText("?");
+        btnHelp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHelpActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -679,12 +686,11 @@ public class ClientServer extends javax.swing.JFrame {
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
-                                .addComponent(btnRecommencer)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtRecommencer, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(48, 48, 48))))))
+                                .addComponent(btnRecommencer))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(53, 53, 53)
+                                .addComponent(btnHelp, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -732,8 +738,8 @@ public class ClientServer extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnRecommencer)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtRecommencer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(27, 27, 27))
+                        .addComponent(btnHelp)
+                        .addGap(26, 26, 26))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -1159,11 +1165,15 @@ public class ClientServer extends javax.swing.JFrame {
         
         if ("TRANSFERT".equals(operation)) {
             if (txtDestination.getText().isEmpty()) {
-                error("La destination doit être entré pour cette operation.");
+                error("La destination doit saisie entré pour cette operation.");
                 return;
             }
             if (txtMontant.getText().isEmpty()) {
-                error("Le montant doit être entré pour cette operation.");
+                error("Le montant doit être saisie pour cette operation.");
+                return;
+            }
+            if (isMontantValid(txtMontant.getText())) {
+                error("Le montant doit être au format AAA$ (trois chiffre et un signe '$').");
                 return;
             }
         }
@@ -1209,6 +1219,15 @@ public class ClientServer extends javax.swing.JFrame {
         messageServerSended = false;
     }//GEN-LAST:event_btnStep10ActionPerformed
 
+    private void btnHelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHelpActionPerformed
+        String msg = "Aide\n";
+        msg += "- Le boutton Recommencer permet de revenir à l'étape 1.\n";
+        msg += "- Pour reprendre l'étape en cours, simplement cliquer sur son numéro.\n";
+        msg += "- Pour des fins de test, l'application permet de ré-exécuter une étape \n"; 
+        msg += "et renvoyer son message, tant que l'étape suivante n'est pas exécuté.";
+        JOptionPane.showMessageDialog(this, msg, "Help", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_btnHelpActionPerformed
+
     private void error(String error) {
         JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
     }
@@ -1229,6 +1248,15 @@ public class ClientServer extends javax.swing.JFrame {
             }
         }
         return "";
+    }
+    
+    private boolean isMontantValid(String value) {
+        return value.length() == 4 && isNumeric(value.charAt(0)) && isNumeric(value.charAt(1)) && 
+                isNumeric(value.charAt(2)) && value.charAt(3) == '$';
+    }
+    
+    private boolean isNumeric(char c) {
+        return c >= '0' && c <= '9';
     }
     
     /**
@@ -1269,6 +1297,7 @@ public class ClientServer extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEnvoyer;
     private javax.swing.ButtonGroup btnGrpOperation;
+    private javax.swing.JButton btnHelp;
     private javax.swing.JButton btnRecommencer;
     private javax.swing.JButton btnStep1;
     private javax.swing.JButton btnStep10;
@@ -1330,6 +1359,5 @@ public class ClientServer extends javax.swing.JFrame {
     private javax.swing.JTextField txtNs1;
     private javax.swing.JTextField txtNs2;
     private javax.swing.JPasswordField txtPassword;
-    private javax.swing.JTextField txtRecommencer;
     // End of variables declaration//GEN-END:variables
 }

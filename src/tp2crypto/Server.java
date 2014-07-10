@@ -16,7 +16,7 @@ public class Server {
     private String m4;
     private String operation;
     private String destination;
-    private String montant;
+    private int montant;
     
     Generator generator = new Generator();
     
@@ -195,10 +195,30 @@ public class Server {
         this.operation = values[0];
         if ("TRANSFERT".equals(operation)) {
             this.destination = values[1];
-            this.montant = values[2];
+            if (!isMontantValid(values[2])) {
+                return false;
+            }
+            this.montant = getAsInt(values[2]);
             return true;
         }
         return "QUITTER".equals(operation);
+    }
+    
+    private boolean isMontantValid(String value) {
+        return value.length() == 4 && isNumeric(value.charAt(0)) && isNumeric(value.charAt(1)) && 
+                isNumeric(value.charAt(2)) && value.charAt(3) == '$';
+    }
+    
+    private boolean isNumeric(char c) {
+        return c >= '0' && c <= '9';
+    }
+    
+    private int getAsInt(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+            return -1;
+        }
     }
         
     private String responseOperation() {
