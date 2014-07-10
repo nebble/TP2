@@ -368,6 +368,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="10"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnStep10ActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="txtNs2">
           <Properties>
@@ -946,9 +949,6 @@
             <Component class="javax.swing.JTextField" name="txtId">
             </Component>
             <Component class="javax.swing.JPasswordField" name="txtPassword">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="jPasswordField1"/>
-              </Properties>
             </Component>
           </SubComponents>
         </Container>

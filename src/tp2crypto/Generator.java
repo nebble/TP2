@@ -15,7 +15,7 @@ public class Generator {
     public String genRandomIV() {
         String iv = "";
         for(int i = 0 ; i < 6 ; i++) {
-            iv += Language.charL0(genRand(0, 65));
+            iv += Language.charL0(randomChar());
         }
         return iv;
     }
@@ -28,5 +28,10 @@ public class Generator {
         int randomNum = rand.nextInt((max - min) + 1) + min;
 
         return String.valueOf(randomNum);
+    }
+    
+    private int randomChar() {
+        Random rand = new Random();
+        return rand.nextInt(65);
     }
 }

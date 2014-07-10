@@ -227,9 +227,7 @@ public class Client {
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
         String[] values = value.split(" ");
-        
-        this.nc1 = generator.genRandomN();
-        
+               
         if ("CHOISIR".equals(values[0]) && "OPERATION".equals(values[1])) {
             this.ns2 = values[4];
         } else if ("REPONSE".equals(values[0])) {
@@ -241,6 +239,7 @@ public class Client {
     }
     
     private String responseOperation() {
+        this.nc1 = generator.genRandomN();
         String response;
         if ("TRANSFERT".equals(this.operation)) {
             response = "TRANSFERT " + this.destination + " " + this.montant + " " + ns2 + " " + nc1;
@@ -249,6 +248,7 @@ public class Client {
         } else {
             return "unknown operation";
         }
+        System.out.println(response);
         SymetricKey symKey = getSymKey();
         return symKey.crypt(generator.genRandomIV(), response);
     }

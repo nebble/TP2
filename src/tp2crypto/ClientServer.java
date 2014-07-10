@@ -169,6 +169,11 @@ public class ClientServer extends javax.swing.JFrame {
         txtIV10.setPreferredSize(new java.awt.Dimension(25, 28));
 
         btnStep10.setText("10");
+        btnStep10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStep10ActionPerformed(evt);
+            }
+        });
 
         txtNs2.setName(""); // NOI18N
         txtNs2.setPreferredSize(new java.awt.Dimension(25, 28));
@@ -469,8 +474,6 @@ public class ClientServer extends javax.swing.JFrame {
         jLabel19.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
         jLabel19.setOpaque(true);
 
-        txtPassword.setText("jPasswordField1");
-
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -769,7 +772,11 @@ public class ClientServer extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnStep3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep3ActionPerformed
-        if (status != Status.WaitingForConnection || client.getStatus() != Status.ServerConnection) {
+        debug();
+        if (status == Status.WaitingForConnection && messageServerSended) {
+            this.status = Status.ServerConnection;
+        }
+        if (status != Status.ServerConnection) {
             error("Le client n'est pas prêt pour cette étape.");
             return;
         }
@@ -777,7 +784,6 @@ public class ClientServer extends javax.swing.JFrame {
             error("La réponse du serveur n'a pas été encore reçu.");
             return;
         }
-        this.status = Status.ServerConnection;
         client.setStatus(status);
         
         if (txtK0.getText().isEmpty()) {
@@ -791,7 +797,7 @@ public class ClientServer extends javax.swing.JFrame {
         client.inject(new FakeGenerator(txtK0.getText()));
         String message = client.sendBack();
         txtMessageEchange.setText(message);
-        messageServerSended = false;
+        messageClientSended = false;
     }//GEN-LAST:event_btnStep3ActionPerformed
 
     private void radioTransfertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioTransfertActionPerformed
@@ -799,6 +805,7 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_radioTransfertActionPerformed
 
     private void btnStep1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep1ActionPerformed
+        debug();
         if (status != Status.ConnectionClosed) {
             error("Le client n'est pas prêt pour cette étape.");
             return;
@@ -817,6 +824,7 @@ public class ClientServer extends javax.swing.JFrame {
         client.inject(new FakeGenerator(txtNc.getText()));
         String message = client.reveiveAndSendBack(null);
         txtMessageEchange.setText(message);
+        messageClientSended = false;
     }//GEN-LAST:event_btnStep1ActionPerformed
 
     private void btnRecommencerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRecommencerActionPerformed
@@ -832,7 +840,11 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRecommencerActionPerformed
 
     private void btnStep4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep4ActionPerformed
-        if (status != Status.ServerConnection || server.getStatus() != Status.ClientConnected) {
+        debug();
+        if (status == Status.ServerConnection && messageClientSended) {
+            this.status = Status.ClientConnected;
+        }
+        if (status != Status.ClientConnected) {
             error("Le serveur n'est pas prêt pour cette étape.");
             return;
         }
@@ -840,7 +852,6 @@ public class ClientServer extends javax.swing.JFrame {
             error("La réponse du client n'a pas été encore reçu.");
             return;
         }
-        this.status = Status.ClientConnected;
         server.setStatus(status);
         
         if (txtIV4.getText().isEmpty()) {
@@ -850,14 +861,14 @@ public class ClientServer extends javax.swing.JFrame {
             error("IV doit être de 6 caractères");
             return;
         }
-        if (Language.isValid(txtIV4.getText())) {
+        if (!Language.isValid(txtIV4.getText())) {
             error("IV doit être inclus dans le Langage L0");
             return;
         }
         server.inject(new FakeGenerator(txtIV4.getText()));
         String message = server.sendBack();
         txtMessageEchange.setText(message);
-        messageClientSended = false;
+        messageServerSended = false;
     }//GEN-LAST:event_btnStep4ActionPerformed
 
     private void txtIV9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIV9ActionPerformed
@@ -865,7 +876,7 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_txtIV9ActionPerformed
 
     private void btnEnvoyerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnvoyerActionPerformed
-
+        debug();
         boolean isServer = false;
         switch (status) {
             case ConnectionClosed:
@@ -928,7 +939,11 @@ public class ClientServer extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEnvoyerActionPerformed
 
     private void btnStep2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep2ActionPerformed
-        if (status != Status.ConnectionClosed || server.getStatus() != Status.WaitingForConnection) {
+        debug();
+        if (status == Status.ConnectionClosed && messageClientSended) {
+            this.status = Status.WaitingForConnection;
+        }
+        if (status != Status.WaitingForConnection) {
             error("Server not ready for this step");
             return;
         }
@@ -936,7 +951,6 @@ public class ClientServer extends javax.swing.JFrame {
             error("No response sended from the client yet.");
             return;
         }
-        this.status = Status.WaitingForConnection;
         server.setStatus(status);
         
         if (txtNs.getText().isEmpty()) {
@@ -950,11 +964,15 @@ public class ClientServer extends javax.swing.JFrame {
         server.inject(new FakeGenerator(txtNs.getText()));
         String message = server.sendBack();
         txtMessageEchange.setText(message);
-        messageClientSended = false;
+        messageServerSended = false;
     }//GEN-LAST:event_btnStep2ActionPerformed
 
     private void btnStep5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep5ActionPerformed
-        if (status != Status.ClientConnected || client.getStatus() != Status.Negociating) {
+        debug();
+        if (status == Status.ClientConnected && messageServerSended) {
+            this.status = Status.Negociating;
+        }
+        if (status != Status.Negociating) {
             error("Le client n'est pas prêt pour cette étape.");
             return;
         }
@@ -962,7 +980,6 @@ public class ClientServer extends javax.swing.JFrame {
             error("La réponse du serveur n'a pas été encore reçu.");
             return;
         }
-        this.status = Status.Negociating;
         client.setStatus(status);
         
         if (txtIV5.getText().isEmpty()) {
@@ -972,18 +989,22 @@ public class ClientServer extends javax.swing.JFrame {
             error("IV doit être de 6 caractères");
             return;
         }
-        if (Language.isValid(txtIV5.getText())) {
+        if (!Language.isValid(txtIV5.getText())) {
             error("IV doit être inclus dans le Langage L0");
             return;
         }
         client.inject(new FakeGenerator(txtIV5.getText()));
         String message = client.sendBack();
         txtMessageEchange.setText(message);
-        messageServerSended = false;
+        messageClientSended = false;
     }//GEN-LAST:event_btnStep5ActionPerformed
 
     private void btnStep6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep6ActionPerformed
-        if (status != Status.Negociating || server.getStatus() != Status.TrustEstablished) {
+        debug();
+        if (status == Status.Negociating && messageClientSended) {
+            this.status = Status.TrustEstablished;
+        }
+        if (status != Status.TrustEstablished) {
             error("Le serveur n'est pas prêt pour cette étape.");
             return;
         }
@@ -991,7 +1012,6 @@ public class ClientServer extends javax.swing.JFrame {
             error("La réponse du client n'a pas été encore reçu.");
             return;
         }
-        this.status = Status.TrustEstablished;
         server.setStatus(status);
         
         if (txtNs1.getText().isEmpty()) {
@@ -1010,18 +1030,22 @@ public class ClientServer extends javax.swing.JFrame {
             error("IV doit être de 6 caractères");
             return;
         }
-        if (Language.isValid(txtIV6.getText())) {
+        if (!Language.isValid(txtIV6.getText())) {
             error("IV doit être inclus dans le Langage L0");
             return;
         }
         server.inject(new FakeGenerator(txtNs1.getText(), txtNs1.getText(), txtIV6.getText()));
         String message = server.sendBack();
         txtMessageEchange.setText(message);
-        messageClientSended = false;
+        messageServerSended = false;
     }//GEN-LAST:event_btnStep6ActionPerformed
 
     private void btnStep7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep7ActionPerformed
-        if (status != Status.TrustEstablished || client.getStatus() != Status.AtemptingLogging) {
+        debug();
+        if (status == Status.TrustEstablished && messageServerSended) {
+            this.status = Status.AtemptingLogging;
+        }
+        if (status != Status.AtemptingLogging) {
             error("Le client n'est pas prêt pour cette étape.");
             return;
         }
@@ -1029,7 +1053,6 @@ public class ClientServer extends javax.swing.JFrame {
             error("La réponse du client n'a pas été encore reçu.");
             return;
         }
-        this.status = Status.AtemptingLogging;
         client.setStatus(status);
         
         if (txtIV7.getText().isEmpty()) {
@@ -1039,7 +1062,7 @@ public class ClientServer extends javax.swing.JFrame {
             error("IV doit être de 6 caractères");
             return;
         }
-        if (Language.isValid(txtIV7.getText())) {
+        if (!Language.isValid(txtIV7.getText())) {
             error("IV doit être inclus dans le Langage L0");
             return;
         }
@@ -1052,11 +1075,15 @@ public class ClientServer extends javax.swing.JFrame {
         client.setPassword(txtPassword.getText());
         String message = client.sendBack();
         txtMessageEchange.setText(message);
-        messageServerSended = false;
+        messageClientSended = false;
     }//GEN-LAST:event_btnStep7ActionPerformed
 
     private void btnStep8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep8ActionPerformed
-        if (status != Status.AtemptingLogging || server.getStatus() != Status.Authenticate) {
+        debug();
+        if (status == Status.AtemptingLogging && messageClientSended) {
+            this.status = Status.Authenticate;
+        }
+        if (status != Status.Authenticate) {
             error("Le serveur n'est pas prêt pour cette étape.");
             return;
         }
@@ -1064,7 +1091,6 @@ public class ClientServer extends javax.swing.JFrame {
             error("La réponse du client n'a pas été encore reçu.");
             return;
         }
-        this.status = Status.Authenticate;
         server.setStatus(status);
         
         if (txtNs2.getText().isEmpty()) {
@@ -1083,18 +1109,22 @@ public class ClientServer extends javax.swing.JFrame {
             error("IV doit être de 6 caractères");
             return;
         }
-        if (Language.isValid(txtIV8.getText())) {
+        if (!Language.isValid(txtIV8.getText())) {
             error("IV doit être inclus dans le Langage L0");
             return;
         }
         server.inject(new FakeGenerator(txtNs2.getText(), txtNs2.getText(), txtIV8.getText()));
         String message = server.sendBack();
         txtMessageEchange.setText(message);
-        messageClientSended = false;
+        messageServerSended = false;
     }//GEN-LAST:event_btnStep8ActionPerformed
 
     private void btnStep9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep9ActionPerformed
-        if (status != Status.Authenticate || client.getStatus() != Status.Logged) {
+        debug();
+        if (status == Status.Authenticate && messageServerSended) {
+            this.status = Status.Logged;
+        }
+        if (status != Status.Logged) {
             error("Le client n'est pas prêt pour cette étape.");
             return;
         }
@@ -1102,7 +1132,6 @@ public class ClientServer extends javax.swing.JFrame {
             error("La réponse du client n'a pas été encore reçu.");
             return;
         }
-        this.status = Status.Logged;
         client.setStatus(status);
         
         if (txtNc1.getText().isEmpty()) {
@@ -1121,7 +1150,7 @@ public class ClientServer extends javax.swing.JFrame {
             error("IV doit être de 6 caractères");
             return;
         }
-        if (Language.isValid(txtIV9.getText())) {
+        if (!Language.isValid(txtIV9.getText())) {
             error("IV doit être inclus dans le Langage L0");
             return;
         }
@@ -1138,14 +1167,46 @@ public class ClientServer extends javax.swing.JFrame {
                 return;
             }
         }
-        
+        System.out.println(txtNc1.getText());
         client.inject(new FakeGenerator(txtNc1.getText(), txtNc1.getText(), txtIV9.getText()));
         client.setDestination(txtDestination.getText());
         client.setMontant(txtMontant.getText());
         String message = client.sendBack();
         txtMessageEchange.setText(message);
-        messageServerSended = false;
+        messageClientSended = false;
     }//GEN-LAST:event_btnStep9ActionPerformed
+
+    private void btnStep10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep10ActionPerformed
+        debug();
+        if (status == Status.Logged && messageClientSended) {
+            this.status = Status.ClientLogged;
+        }
+        if (status != Status.ClientLogged) {
+            error("Le serveur n'est pas prêt pour cette étape.");
+            return;
+        }
+        if (!messageClientSended) {
+            error("La réponse du client n'a pas été encore reçu.");
+            return;
+        }
+        server.setStatus(status);
+        
+        if (txtIV10.getText().isEmpty()) {
+            txtIV10.setText(generator.genRandomIV());
+        }
+        if (txtIV10.getText().length() != 6) {
+            error("IV doit être de 6 caractères");
+            return;
+        }
+        if (!Language.isValid(txtIV10.getText())) {
+            error("IV doit être inclus dans le Langage L0");
+            return;
+        }
+        server.inject(new FakeGenerator(txtIV10.getText()));
+        String message = server.sendBack();
+        txtMessageEchange.setText(message);
+        messageServerSended = false;
+    }//GEN-LAST:event_btnStep10ActionPerformed
 
     private void error(String error) {
         JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
@@ -1167,6 +1228,12 @@ public class ClientServer extends javax.swing.JFrame {
             }
         }
         return "";
+    }
+    
+    private void debug() {
+        System.out.println(status);
+        System.out.println("Client: " + client.getStatus());
+        System.out.println("Server: " + server.getStatus());
     }
     
     /**
