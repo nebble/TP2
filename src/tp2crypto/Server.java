@@ -110,18 +110,9 @@ public class Server {
         return new SymetricKey(k);
     }
     
-    private boolean validateNc(String message) {
-        try {
-            int intValue = Integer.parseInt(message);
-            if (intValue < 0 || intValue > 99999) {
-                return false;
-            }
-        } catch (NumberFormatException ex) {
-            return false;
-        }
-        
+    private boolean validateNc(String message) {        
         this.nc = message;
-        return true;
+        return isValidN(message);
     }
 
     private String responseToClient() {
@@ -132,6 +123,14 @@ public class Server {
 
     private boolean validateConnect(String value) {
         this.k0 = Crypto.rsa(value, PRIVATE_KEY);
+        try {
+            int intValue = Integer.parseInt(k0);
+            if (intValue < 2 || intValue > 3810) {
+                return false;
+            }
+        } catch (NumberFormatException ex) {
+            return false;
+        }
         this.m3 = value;
         return true;
     }
@@ -169,13 +168,12 @@ public class Server {
         String value = symKey.decrypt(message);
         
         String[] split = value.split(" ");
-        
-        this.username = split[0];
-        if (!Database.validateCredential(username, split[1])) {
+        if (split.length < 3 || !ns1.equals(split[2])) {
             return false;
         }
         
-        return split[2].equals(this.ns1);
+        this.username = split[0];
+        return Database.validateCredential(username, split[1]);
     }
     
     private String responseAuth() {
@@ -192,12 +190,16 @@ public class Server {
         String value = symKey.decrypt(message);
         
         String[] values = value.split(" ");
+        if (values.length < 3) {
+            return false;
+        }
+        this.nc1 = values[values.length - 1];
+        String clientNs2 = values[values.length - 2];
         
-        if (!this.ns2.equals(values[3])) {
+        if (!ns2.equals(clientNs2) || !isValidN(nc1)) {
             return false;
         }
 
-        this.nc1 = values[4];
         this.operation = values[0];
         if ("TRANSFERT".equals(operation)) {
             this.destination = values[1];
@@ -242,5 +244,21 @@ public class Server {
         String response = "REPONSE " + (success ? "1" : "0") + " " + nc1;
         SymetricKey symKey = getSymKey();
         return symKey.crypt(generator.genRandomIV(), response);
+    }
+    
+    private boolean isValidN(String value) {
+        return isBetween(value, 0, 99999);
+    }
+    
+    private boolean isBetween(String value, int min, int max) {
+        try {
+            int intValue = Integer.parseInt(value);
+            if (intValue < min || intValue > max) {
+                return false;
+            }
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+        return true;
     }
 }

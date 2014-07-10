@@ -34,6 +34,9 @@ public class SymetricKey {
     }
     
     public String decrypt(String crypted) {
+        if (crypted.length() <= 6) {
+            return "";
+        }
         this.position = 0;
         this.flux = new ArrayList<>();
         this.iv = crypted.substring(0, 6);

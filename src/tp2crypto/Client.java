@@ -82,6 +82,10 @@ public class Client {
         this.montant = montant;
     }
 
+    public void setNc1(String nc1) {
+        this.nc1 = nc1;
+    }
+
     void inject(Generator fakeGenerator) {
         this.generator = fakeGenerator;
     }
@@ -141,6 +145,9 @@ public class Client {
     private boolean validateCert(String message) {
         this.m2 = message;
         String[] split = message.split(" ");
+        if (split.length != 9) {
+            return false;
+        }
         this.ns = split[0];
         String website = split[1];
         String auth = split[2];
@@ -166,14 +173,16 @@ public class Client {
             return false;
         }
         
-        this.serverKey = new Key(Integer.parseInt(e),Integer.parseInt(n));
-        
-        String result = Crypto.rsa(crypt, keyCA);
-        String hash = FunctionH.hash(website + " " + auth + " " + year + " " + month + " " + day + " " + e + " " + n);
-        if (!result.equals(hash)) {
+        if (!(isNumeric(e) && isNumeric(n))) {
             return false;
         }
-        return true;
+        
+        this.serverKey = new Key(Integer.parseInt(e),Integer.parseInt(n));
+        
+        // Validation que la signature est valide
+        String result = Crypto.rsa(crypt, keyCA);
+        String hash = FunctionH.hash(website + " " + auth + " " + year + " " + month + " " + day + " " + e + " " + n);
+        return result.equals(hash);
     }
 
     private String reponseCert() {
@@ -211,9 +220,12 @@ public class Client {
         String value = symKey.decrypt(message);
         
         String[] split = value.split(" ");
+        if (split.length < 1) {
+            return false;
+        }
         this.ns1 = split[split.length - 1];
         
-        return true;
+        return isValidN(ns1) && value.equals("DONNER NUMERO ET MOT DE PASSE " +  ns1);
     }
         
     private String responseAuth() {
@@ -223,19 +235,27 @@ public class Client {
         return symKey.crypt(generator.genRandomIV(), m);
     }
     
-    private boolean validateOperation(String message) {
+    private boolean validateOperation(String message) {        
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
         String[] values = value.split(" ");
-               
+        if (values.length < 3) {
+            return false;
+        }
+            
         if ("CHOISIR".equals(values[0]) && "OPERATION".equals(values[1])) {
-            this.ns2 = values[4];
+            this.ns2 = values[values.length - 1];
         } else if ("REPONSE".equals(values[0])) {
+            String code = values[0];
             this.ns2 = values[1];
+            String serverNc1 = values[2];
+            if (!nc1.equals(serverNc1)) {
+                return false;
+            }
         } else {
             return false;
         }
-        return true;
+        return isValidN(ns2);
     }
     
     private String responseOperation() {
@@ -250,5 +270,30 @@ public class Client {
         }
         SymetricKey symKey = getSymKey();
         return symKey.crypt(generator.genRandomIV(), response);
+    }
+    
+    private boolean isNumeric(String value) {
+        try {
+            Integer.parseInt(value);
+            return true;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
+    
+    private boolean isValidN(String value) {
+        return isBetween(value, 0, 99999);
+    }
+    
+    private boolean isBetween(String value, int min, int max) {
+        try {
+            int intValue = Integer.parseInt(value);
+            if (intValue < min || intValue > max) {
+                return false;
+            }
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+        return true;
     }
 }

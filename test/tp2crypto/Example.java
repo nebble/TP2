@@ -134,6 +134,7 @@ public class Example {
         client.setStatus(Logged);
         client.setNumCompte("80123");
         client.setPassword("BN12Z");
+        client.setNc1("116");
         initKc();
         client.inject(new FakeGenerator("116", "116", "lu7btI"));
         client.setOperation("QUITTER");
