@@ -1127,7 +1127,8 @@ public class ClientServer extends javax.swing.JFrame {
 
     private void btnStep9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStep9ActionPerformed
         
-        if (status == Status.Authenticate && messageServerSended) {
+        if (((status == Status.ClientLogged && server.getStatus() != Status.WaitingForConnection) || 
+                status == Status.Authenticate) && messageServerSended) {
             this.status = Status.Logged;
         }
         if (!messageServerSended) {
@@ -1179,6 +1180,7 @@ public class ClientServer extends javax.swing.JFrame {
         }
         
         client.inject(new FakeGenerator(txtNc1.getText(), txtNc1.getText(), txtIV9.getText()));
+        client.setOperation(operation);
         client.setDestination(txtDestination.getText());
         client.setMontant(txtMontant.getText());
         String message = client.sendBack();

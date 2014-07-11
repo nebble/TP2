@@ -252,6 +252,9 @@ public class Client {
             if (!nc1.equals(serverNc1)) {
                 return false;
             }
+            if ("QUITTER".equals(operation) && "1".equals(code)) {
+                this.status = ConnectionClosed;
+            }
         } else {
             return false;
         }
