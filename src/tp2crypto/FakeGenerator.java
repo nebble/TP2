@@ -1,7 +1,5 @@
 package tp2crypto;
 
-import tp2crypto.Generator;
-
 public class FakeGenerator extends Generator{
     private final String k;
     private final String n;

@@ -7,7 +7,6 @@ public class FunctionH {
         if(n <= 0) {
             return 0;
         } else {
-            // BUGGED
             return square( 
                     Long.parseLong(s.split("(?<=\\G.{5})")[n-1]) // Bi 
                     + h(s, n-1) 

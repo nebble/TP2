@@ -16,8 +16,8 @@ public class Client {
     private String ns2;
     private String k0;
     
-    private Key serverKey;
-    private final Key keyCA = new Key(31,7979);
+    private Key publicServerKey;
+    private final Key publicCertKey = new Key(31,7979);
     
     Generator generator = new Generator();
     private String m2;
@@ -136,12 +136,14 @@ public class Client {
         return new SymetricKey(k);
     }
     
+    /* Client operation for step 1 */
     private String initNC0() {
         this.nc = generator.genRandomN();
         status = ServerConnection;
         return nc;
     }
     
+    /* Client validation for step 2 */
     private boolean validateCert(String message) {
         this.m2 = message;
         String[] split = message.split(" ");
@@ -158,6 +160,7 @@ public class Client {
         String n = split[7];
         String crypt = split[8];
         
+        // Validation of the server certificate
         if (!"www.desjardins.com".equals(website)) {
             return false;
         }
@@ -177,24 +180,26 @@ public class Client {
             return false;
         }
         
-        this.serverKey = new Key(Integer.parseInt(e),Integer.parseInt(n));
+        this.publicServerKey = new Key(Integer.parseInt(e),Integer.parseInt(n));
         
         // Validation que la signature est valide
-        String result = Crypto.rsa(crypt, keyCA);
+        String result = Crypto.rsa(crypt, publicCertKey);
         String hash = FunctionH.hash(website + " " + auth + " " + year + " " + month + " " + day + " " + e + " " + n);
         return result.equals(hash);
     }
 
+    /* Client operation for step 3 */
     private String reponseCert() {
         this.k0 = generator.genRandomK();
         
         this.status = Negociating;
         
-        String rsa = Crypto.rsa(k0, serverKey);
+        String rsa = Crypto.rsa(k0, publicServerKey);
         this.m3 = rsa;
         return rsa;
     }
 
+    /* Client validation for step 4 */
     private boolean validateNego(String message) {
         this.m4 = message;
         SymetricKey symKey = getSymKey();
@@ -206,6 +211,7 @@ public class Client {
         return value.equals(h);
     }
     
+    /* Client operation for step 5 */
     private String responseNego() {
         String m = nc + m2 + m3 + m4;
         String h = FunctionH.hash(m);
@@ -215,6 +221,7 @@ public class Client {
         return symKey.crypt(generator.genRandomIV(), h);
     }   
     
+    /* Client validation for step 6 */
     private boolean validateAuth(String message){
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
@@ -228,6 +235,7 @@ public class Client {
         return isValidN(ns1) && value.equals("DONNER NUMERO ET MOT DE PASSE " +  ns1);
     }
         
+    /* Client operation for step 7 */
     private String responseAuth() {
         SymetricKey symKey = getSymKey();
         String m = this.numCpt + " " + this.passwd + " " + ns1;
@@ -235,6 +243,7 @@ public class Client {
         return symKey.crypt(generator.genRandomIV(), m);
     }
     
+    /* Client validation for step 8 and 10 */
     private boolean validateOperation(String message) {        
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
@@ -261,6 +270,7 @@ public class Client {
         return isValidN(ns2);
     }
     
+    /* Client operation for step 9 */
     private String responseOperation() {
         this.nc1 = generator.genRandomN();
         String response;

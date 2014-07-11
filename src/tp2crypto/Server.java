@@ -6,20 +6,22 @@ public class Server {
     private static final Key PRIVATE_KEY = new Key(479, 3811);
     private Status status = WaitingForConnection;
     private static final String cert = "www.desjardins.com VERISIGN 2025 01 01 23 3811 6069";
+    Generator generator = new Generator();
+    
     private String nc;
     private String nc1;
     private String ns;
-    private String k0;
     private String ns1;
     private String ns2;
+    private String k0;
+    
     private String m3;
     private String m4;
+    
     private String operation;
     private String username;
     private String destination;
     private int montant;
-    
-    Generator generator = new Generator();
     
     void setStatus(Status status) {
         this.status = status;
@@ -110,31 +112,32 @@ public class Server {
         return new SymetricKey(k);
     }
     
+    /* Server validation for step 1 */
     private boolean validateNc(String message) {        
         this.nc = message;
         return isValidN(message);
     }
 
+    /* Server operation for step 2 */
     private String responseToClient() {
         status = ClientConnected;
         this.ns = generator.genRandomN();
         return ns + " " + cert;
     }
 
+    /* Server validation for step 3 */
     private boolean validateConnect(String value) {
         this.k0 = Crypto.rsa(value, PRIVATE_KEY);
-        try {
-            int intValue = Integer.parseInt(k0);
-            if (intValue < 2 || intValue > 3810) {
-                return false;
-            }
-        } catch (NumberFormatException ex) {
+        
+        if (!isValidK(k0)) {
             return false;
         }
+        
         this.m3 = value;
         return true;
     }
 
+    /* Server operation for step 4 */
     private String responseConnected() {
         String m = nc + (ns + " " + cert) + m3; // m1 + m2 + m3
         String h = FunctionH.hash(m);
@@ -144,6 +147,7 @@ public class Server {
         return m4;
     }
 
+    /* Server validation for step 5 */
     private boolean validateTrusted(String message) {
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
@@ -154,6 +158,7 @@ public class Server {
         return value.equals(h);
     }
     
+    /* Server operation for step 6 */
     private String responseTrusted() {
         this.ns1 = generator.genRandomN();
         String ret = "DONNER NUMERO ET MOT DE PASSE " + ns1;
@@ -163,6 +168,7 @@ public class Server {
         return symKey.crypt(generator.genRandomIV(), ret);
     }
 
+    /* Server validation for step 7 */
     private boolean validateAuth(String message){
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
@@ -176,6 +182,7 @@ public class Server {
         return Database.validateCredential(username, split[1]);
     }
     
+    /* Server operation for step 8 */
     private String responseAuth() {
         this.ns2 = generator.genRandomN();
         String ret = "CHOISIR OPERATION TRANSFERT QUITTER " + ns2;
@@ -185,6 +192,7 @@ public class Server {
         return symKey.crypt(generator.genRandomIV(), ret);
     }
     
+    /* Server validation for step 9 */
     private boolean validateOperation(String message) {
         SymetricKey symKey = getSymKey();
         String value = symKey.decrypt(message);
@@ -248,6 +256,10 @@ public class Server {
     
     private boolean isValidN(String value) {
         return isBetween(value, 0, 99999);
+    }
+    
+    private boolean isValidK(String value) {
+        return isBetween(value, 2, 3810);
     }
     
     private boolean isBetween(String value, int min, int max) {

@@ -23,8 +23,6 @@ public class Generator {
     public static String genRand(int min, int max){
         
         Random rand = new Random();
-
-        // nextInt exlus la valeur limite maximum. On ajoute 1.
         int randomNum = rand.nextInt((max - min) + 1) + min;
 
         return String.valueOf(randomNum);

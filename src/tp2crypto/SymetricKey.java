@@ -21,6 +21,7 @@ public class SymetricKey {
         return (inner * inner) % 65; // LSFR K,IV [i]
     }
     
+    /* Crypt using the LSFR function */
     public String crypt(String iv, String m) {
         this.position = 0;
         this.flux = new ArrayList<>();
@@ -33,6 +34,7 @@ public class SymetricKey {
         return crypted;
     }
     
+    /* Decrypt using the LSFR function, 6 first letter are the IV */
     public String decrypt(String crypted) {
         if (crypted.length() <= 6) {
             return "";
